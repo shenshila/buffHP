@@ -1,35 +1,65 @@
-
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Основные цвета */
+:root {
+  --medical-red: #dc3545;
+  --medical-light: #f8f9fa;
 }
 
-
-.patient-card {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+body {
+  background-color: #f5f5f5;
   color: #333;
 }
 
-input, button {
-  margin: 5px;
-  padding: 8px;
+/* Навигация */
+.navbar {
+  /* border-bottom: 3px solid white; */
 }
 
-.search-section, .insurance-search {
-  margin: 20px;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background-color: #282c34;
+.nav-link {
+  font-weight: 500;
 }
+
+.nav-link:hover {
+  color: rgb(224, 79, 57) !important;
+  /* text-decoration: underline; */
+}
+
+/* Кнопки */
+.btn-outline-light:hover {
+  background-color: white;
+  color: var(--medical-red) !important;
+}
+
+/* Активные элементы */
+.active {
+  font-weight: bold;
+}
+
+/* Иконки */
+.bi {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+/* Карточки */
+.card {
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  transition: all 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(220, 53, 69, 0.1);
+}
+
+.card-header {
+  background-color: rgba(220, 53, 69, 0.05);
+  border-bottom: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* Таблицы */
+.table th {
+  background-color: rgba(220, 53, 69, 0.05);
+  color: var(--medical-red);
+}
+
+/* Подключение иконок Bootstrap */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
