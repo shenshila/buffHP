@@ -31,13 +31,22 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<Patient> filterPatients(String gender, LocalDate startDate, LocalDate endDate) {
+    public List<PatientDto> filterPatients(String gender, LocalDate startDate, LocalDate endDate) {
         if (gender != null && startDate != null && endDate != null) {
-            return patientRepository.findByGenderAndBirthDateBetween(gender, startDate, endDate);
+            return patientRepository.findByGenderAndBirthDateBetween(gender, startDate, endDate)
+                    .stream()
+                    .map(patientMapper::toDto)
+                    .collect(Collectors.toList());
         } else if (gender != null) {
-            return patientRepository.findByGender(gender);
+            return patientRepository.findByGender(gender)
+                    .stream()
+                    .map(patientMapper::toDto)
+                    .collect(Collectors.toList());
         } else if (startDate != null && endDate != null) {
-            return patientRepository.findByBirthDateBetween(startDate, endDate);
+            return patientRepository.findByBirthDateBetween(startDate, endDate)
+                    .stream()
+                    .map(patientMapper::toDto)
+                    .collect(Collectors.toList());
         }
 
         return List.of();

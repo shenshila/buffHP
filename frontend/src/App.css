@@ -58,7 +58,21 @@ body {
 /* Таблицы */
 .table th {
   background-color: rgba(220, 53, 69, 0.05);
-  color: var(--medical-red);
+  /* color: var(--medical-red); */
+}
+
+.filter-section .form-group {
+  margin-bottom: 1rem;
+}
+
+.filter-section .react-datepicker-wrapper {
+  width: 100%;
+}
+
+/* Выравнивание меток */
+.filter-section .form-label {
+  display: block;
+  margin-bottom: 0.3rem;
 }
 
 /* Подключение иконок Bootstrap */

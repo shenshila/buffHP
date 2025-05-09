@@ -17,3 +17,15 @@ export const findPatientById = async (id) => {
     if (!response.ok) throw new Error('Patient not found');
     return await response.json();
   };
+
+// Добавляем новый метод для фильтрации
+export const filterPatients = async (gender, startDate, endDate) => {
+  const params = new URLSearchParams();
+  if (gender) params.append('gender', gender);
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+  
+  const response = await fetch(`http://localhost:8080/api/patients/filter?${params.toString()}`);
+  if (!response.ok) throw new Error('Filter failed');
+  return await response.json();
+};
