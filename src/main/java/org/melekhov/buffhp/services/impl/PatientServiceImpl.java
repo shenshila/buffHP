@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.*;
 import org.melekhov.buffhp.entities.Appointment;
 import org.melekhov.buffhp.entities.Patient;
+import org.melekhov.buffhp.handler.GlobalExceptionHandler;
 import org.melekhov.buffhp.mappers.*;
 import org.melekhov.buffhp.repositories.*;
 import org.melekhov.buffhp.services.PatientService;
@@ -66,7 +67,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientProfileDto getPatientProfile(UUID id) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Patient not found"));
 
         List<AppointmentDto> appointmentDtoList = appointmentRepository.findByPatientId(id)
                 .stream()

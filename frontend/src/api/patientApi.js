@@ -29,3 +29,15 @@ export const filterPatients = async (gender, startDate, endDate) => {
   if (!response.ok) throw new Error('Filter failed');
   return await response.json();
 };
+
+// Новый метод для получения полного профиля пациента
+export const getPatientProfile = async (id) => {
+  const response = await fetch(`${API_URL}/${id}/profile`);
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to fetch patient profile');
+  }
+  
+  return await response.json();
+};
