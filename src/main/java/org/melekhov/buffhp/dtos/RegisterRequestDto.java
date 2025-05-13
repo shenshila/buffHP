@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class RegisterRequest {
+public class RegisterRequestDto {
     private String username;
     private String password;
     private String email;

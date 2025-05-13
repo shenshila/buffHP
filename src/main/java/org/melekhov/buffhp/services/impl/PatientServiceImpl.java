@@ -22,9 +22,8 @@ public class PatientServiceImpl implements PatientService {
     private final PatientMapper patientMapper;
 
     @Override
-    public List<PatientDto> searchPatient(String keyword) {
-        return patientRepository
-                .searchByKeyword(keyword)
+    public List<PatientDto> universalSearch(String keyword) {
+        return patientRepository.universalSearch(keyword)
                 .stream()
                 .map(patientMapper::toDto)
                 .collect(Collectors.toList());
@@ -52,14 +51,6 @@ public class PatientServiceImpl implements PatientService {
         return List.of();
     }
 
-    @Override
-    public PatientDto findByInsuranceNumber(String insuranceNumber) {
-        Patient patient =  patientRepository.findByInsuranceNumber(insuranceNumber)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
-
-        return patientMapper.toDto(patient);
-    }
-
     public PatientDto createPatient(PatientDto requestDto) {
         Patient patient = patientMapper.toEntity(requestDto);
         Patient savedPatient = patientRepository.save(patient);
@@ -67,5 +58,20 @@ public class PatientServiceImpl implements PatientService {
         return patientMapper.toDto(savedPatient);
     }
 
+    //    @Override
+//    public List<PatientDto> searchPatient(String keyword) {
+//        return patientRepository
+//                .searchByKeyword(keyword)
+//                .stream()
+//                .map(patientMapper::toDto)
+//                .collect(Collectors.toList());
+//    }
 
+    //    @Override
+//    public PatientDto findByInsuranceNumber(String insuranceNumber) {
+//        Patient patient =  patientRepository.findByInsuranceNumber(insuranceNumber)
+//                .orElseThrow(() -> new RuntimeException("Patient not found"));
+//
+//        return patientMapper.toDto(patient);
+//    }
 }

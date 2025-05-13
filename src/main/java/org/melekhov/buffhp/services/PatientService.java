@@ -9,9 +9,13 @@ import java.util.List;
 @Service
 public interface PatientService {
 
-    List<PatientDto> searchPatient(String keyword);
+    List<PatientDto> universalSearch(String keyword);
 
     List<PatientDto> filterPatients(String gender, LocalDate startDate, LocalDate endDate);
 
-    PatientDto findByInsuranceNumber(String insuranceNumber);
+
+    // no using
+//    List<PatientDto> searchPatient(String keyword);
+
+//    PatientDto findByInsuranceNumber(String insuranceNumber);
 }

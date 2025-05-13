@@ -19,13 +19,17 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
             "LOWER(p.lastName) LIKE LOWER(concat('%', :keyword, '%'))")
     List<Patient> searchByKeyword(@Param("keyword") String keyword);
 
-//    List<Patient> findByFirstNameAndLastName(String firstName, String lastName);
-
-    Optional<Patient> findByInsuranceNumber(String insuranceNumber);
+    @Query("SELECT p FROM Patient p WHERE " +
+            "LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "p.insuranceNumber LIKE %:keyword%")
+    List<Patient> universalSearch(@Param("keyword") String keyword);
 
     List<Patient> findByBirthDateBetween(LocalDate startDate, LocalDate endDate);
 
     List<Patient> findByGender(String gender);
 
     List<Patient> findByGenderAndBirthDateBetween(String gender, LocalDate startDate, LocalDate endDate);
+
+    //    List<Patient> findByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Patient> findByInsuranceNumber(String insuranceNumber);
 }

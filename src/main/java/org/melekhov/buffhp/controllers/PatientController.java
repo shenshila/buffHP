@@ -22,12 +22,13 @@ public class PatientController {
     @GetMapping("/search")
     public ResponseEntity<List<PatientDto>> searchPatients(@RequestParam String keyword) {
         // Если keyword похож на страховой номер (только цифры)
-        if (keyword.matches("\\d+")) {
-            PatientDto patient = patientService.findByInsuranceNumber(keyword);
-            return ResponseEntity.ok(patient != null ? List.of(patient) : List.of());
-        }
+//        if (keyword.matches("\\d+")) {
+//            PatientDto patient = patientService.findByInsuranceNumber(keyword);
+//            return ResponseEntity.ok(patient != null ? List.of(patient) : List.of());
+//        }
+
         // Иначе поиск по имени/фамилии
-        return ResponseEntity.ok(patientService.searchPatient(keyword));
+        return ResponseEntity.ok(patientService.universalSearch(keyword));
     }
 
     @GetMapping("/filter")

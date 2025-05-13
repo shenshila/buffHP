@@ -36,6 +36,7 @@ public class Patient {
     private String phone;
     private String email;
     private String address;
+    @Column(unique = true, nullable = false)
     private String insuranceNumber;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
