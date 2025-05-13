@@ -1,10 +1,12 @@
 package org.melekhov.buffhp.services;
 
 import org.melekhov.buffhp.dtos.PatientDto;
+import org.melekhov.buffhp.dtos.PatientProfileDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public interface PatientService {
@@ -13,6 +15,7 @@ public interface PatientService {
 
     List<PatientDto> filterPatients(String gender, LocalDate startDate, LocalDate endDate);
 
+    PatientProfileDto getPatientProfile(UUID id);
 
     // no using
 //    List<PatientDto> searchPatient(String keyword);

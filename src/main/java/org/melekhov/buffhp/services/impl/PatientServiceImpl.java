@@ -2,15 +2,17 @@ package org.melekhov.buffhp.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.melekhov.buffhp.dtos.PatientDto;
+import org.melekhov.buffhp.dtos.*;
+import org.melekhov.buffhp.entities.Appointment;
 import org.melekhov.buffhp.entities.Patient;
-import org.melekhov.buffhp.mappers.PatientMapper;
-import org.melekhov.buffhp.repositories.PatientRepository;
+import org.melekhov.buffhp.mappers.*;
+import org.melekhov.buffhp.repositories.*;
 import org.melekhov.buffhp.services.PatientService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +21,17 @@ import java.util.stream.Collectors;
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+    private final PrescriptionRepository prescriptionRepository;
+    private final AppointmentRepository appointmentRepository;
+
     private final PatientMapper patientMapper;
+    private final DoctorMapper doctorMapper;
+    private final MedicalRecordMapper medicalRecordMapper;
+    private final AppointmentMapper appointmentMapper;
+    private final PrescriptionMapper prescriptionMapper;
+    private final PatientProfileMapper patientProfileMapper;
 
     @Override
     public List<PatientDto> universalSearch(String keyword) {
@@ -49,6 +61,29 @@ public class PatientServiceImpl implements PatientService {
         }
 
         return List.of();
+    }
+
+    @Override
+    public PatientProfileDto getPatientProfile(UUID id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        List<AppointmentDto> appointmentDtoList = appointmentRepository.findByPatientId(id)
+                .stream()
+                .map(appointmentMapper::toDto)
+                .toList();
+
+        List<MedicalRecordDto> medicalRecordDtoList = medicalRecordRepository.findByPatientId(id)
+                .stream()
+                .map(medicalRecordMapper::toMedicalRecordDto)
+                .toList();
+
+        List<PrescriptionDto> prescriptionDtoList = prescriptionRepository.findByPatientId(id)
+                .stream()
+                .map(prescriptionMapper::toDto)
+                .toList();
+
+        return patientProfileMapper.toDto(patient, appointmentDtoList, medicalRecordDtoList, prescriptionDtoList);
     }
 
     public PatientDto createPatient(PatientDto requestDto) {

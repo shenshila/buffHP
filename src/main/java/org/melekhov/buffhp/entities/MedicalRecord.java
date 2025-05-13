@@ -29,6 +29,6 @@ public class MedicalRecord {
     private String diagnosis;
     private String treatment;
 
-    @Lob
-    private String attachments; // Можно хранить ссылки на файлы (анализы, снимки)
+//    @Lob
+//    private String attachments; // Можно хранить ссылки на файлы (анализы, снимки)
 }
