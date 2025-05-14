@@ -16,5 +16,5 @@ public class Role {
     private UUID roleId;
 
     @Column(nullable = false)
-    private UserRole name; // "ROLE_ADMIN", "ROLE_DOCTOR", "ROLE_PATIENT"
+    private String name; // "ROLE_ADMIN", "ROLE_DOCTOR", "ROLE_PATIENT"
 }

@@ -87,12 +87,12 @@ public class PatientServiceImpl implements PatientService {
         return patientProfileMapper.toDto(patient, appointmentDtoList, medicalRecordDtoList, prescriptionDtoList);
     }
 
-    public PatientDto createPatient(PatientDto requestDto) {
-        Patient patient = patientMapper.toEntity(requestDto);
-        Patient savedPatient = patientRepository.save(patient);
-
-        return patientMapper.toDto(savedPatient);
-    }
+//    public PatientDto createPatient(PatientDto requestDto) {
+//        Patient patient = patientMapper.toEntity(requestDto);
+//        Patient savedPatient = patientRepository.save(patient);
+//
+//        return patientMapper.toDto(savedPatient);
+//    }
 
     //    @Override
 //    public List<PatientDto> searchPatient(String keyword) {

@@ -36,4 +36,8 @@ public class Doctor {
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<Prescription> prescriptions;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

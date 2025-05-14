@@ -21,13 +21,10 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(unique = true, nullable = false)
-    private String username;
-
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -37,4 +34,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Patient patient;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Doctor doctor;
 }

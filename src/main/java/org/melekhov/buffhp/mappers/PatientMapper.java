@@ -2,8 +2,12 @@ package org.melekhov.buffhp.mappers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.PatientDto;
+import org.melekhov.buffhp.dtos.RegistrationRequestDto;
 import org.melekhov.buffhp.entities.Patient;
+import org.melekhov.buffhp.entities.User;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -24,19 +28,18 @@ public class PatientMapper {
         return patientDto;
     }
 
-    public Patient toEntity(PatientDto patientDto) {
+    public Patient toEntity(RegistrationRequestDto request, User user) {
         log.info("Converting patientDTO to Patient...");
-        Patient patient = Patient.builder()
-                .patientId(patientDto.getId())
-                .firstName(patientDto.getFirstName())
-                .middleName(patientDto.getMiddleName())
-                .lastName(patientDto.getLastName())
-                .birthDate(patientDto.getBirthDate())
-                .gender(patientDto.getGender())
-                .phone(patientDto.getPhoneNumber())
-                .insuranceNumber(patientDto.getInsuranceNumber())
-                .build();
 
-        return patient;
+        return Patient.builder()
+                .firstName(request.getFirstName())
+                .middleName(request.getMiddleName())
+                .lastName(request.getLastName())
+                .birthDate(request.getBirthDate())
+                .gender(request.getGender())
+                .phone(request.getPhone())
+                .insuranceNumber(request.getInsuranceNumber())
+                .user(user)
+                .build();
     }
 }
