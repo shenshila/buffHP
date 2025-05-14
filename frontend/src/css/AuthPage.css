@@ -1,0 +1,44 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .auth-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .auth-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    padding: 1rem 2rem;
+  }
+  
+  .auth-tabs .nav-link.active {
+    color: #dc3545;
+    background: transparent;
+    border-bottom: 3px solid #dc3545;
+  }
+  
+  .auth-tabs .nav-link:hover:not(.active) {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .auth-card {
+      margin: 1rem;
+    }
+    
+    .auth-tabs .nav-link {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+  }

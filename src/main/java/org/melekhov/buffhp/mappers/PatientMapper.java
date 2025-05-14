@@ -13,7 +13,7 @@ import java.util.UUID;
 @Slf4j
 public class PatientMapper {
     public PatientDto toDto(Patient patient) {
-        log.info("Converting patient to PatientDto...");
+//        log.info("Converting patient to PatientDto...");
         PatientDto patientDto = PatientDto.builder()
                 .id(patient.getPatientId())
                 .firstName(patient.getFirstName())
@@ -29,7 +29,7 @@ public class PatientMapper {
     }
 
     public Patient toEntity(RegistrationRequestDto request, User user) {
-        log.info("Converting patientDTO to Patient...");
+//        log.info("Converting patientDTO to Patient...");
 
         return Patient.builder()
                 .firstName(request.getFirstName())
