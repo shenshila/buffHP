@@ -1,4 +1,4 @@
-package org.melekhov.buffhp.util;
+package org.melekhov.buffhp.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

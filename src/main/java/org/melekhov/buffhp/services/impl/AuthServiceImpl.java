@@ -16,7 +16,7 @@ import org.melekhov.buffhp.repositories.PatientRepository;
 import org.melekhov.buffhp.repositories.RoleRepository;
 import org.melekhov.buffhp.repositories.UserRepository;
 import org.melekhov.buffhp.services.AuthService;
-import org.melekhov.buffhp.util.JwtTokenProvider;
+import org.melekhov.buffhp.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

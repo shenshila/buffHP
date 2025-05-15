@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -34,4 +36,10 @@ public class Prescription {
     private String medication;
     private String dosage;
     private String instructions;
+
+    @Column(unique = true)
+    private String verificationCode; // Уникальный код для верификации
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private byte[] qrCode;
 }

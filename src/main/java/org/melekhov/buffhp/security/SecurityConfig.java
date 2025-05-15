@@ -1,9 +1,6 @@
-package org.melekhov.buffhp.config;
+package org.melekhov.buffhp.security;
 
 import lombok.RequiredArgsConstructor;
-import org.melekhov.buffhp.services.CustomUserDetailsService;
-import org.melekhov.buffhp.util.JwtTokenFilter;
-import org.melekhov.buffhp.util.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

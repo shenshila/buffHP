@@ -1,4 +1,4 @@
-package org.melekhov.buffhp.services;
+package org.melekhov.buffhp.security;
 
 import lombok.RequiredArgsConstructor;
 import org.melekhov.buffhp.entities.User;
