@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.*;
 import org.melekhov.buffhp.entities.Appointment;
+import org.melekhov.buffhp.entities.MedicalRecord;
 import org.melekhov.buffhp.entities.Patient;
 import org.melekhov.buffhp.handler.GlobalExceptionHandler;
 import org.melekhov.buffhp.mappers.*;
@@ -26,6 +27,7 @@ public class PatientServiceImpl implements PatientService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final PrescriptionRepository prescriptionRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AIChatServiceImpl symptomAnalysisService;
 
     private final PatientMapper patientMapper;
     private final DoctorMapper doctorMapper;
@@ -87,6 +89,25 @@ public class PatientServiceImpl implements PatientService {
 
         return patientProfileMapper.toDto(patient, appointmentDtoList, medicalRecordDtoList, prescriptionDtoList);
     }
+
+    public void saveRecordFromAi(UUID patientId, String symptoms) {
+        String aiResponse = symptomAnalysisService.analyzeSymptoms(symptoms);
+
+        String[] parts = aiResponse.split("Лечение:");
+        String diagnosis = parts[0].replace("Диагноз:", "").trim();
+        String treatment = parts.length > 1 ? parts[1].trim() : "Нет рекомендаций";
+
+        MedicalRecord record = MedicalRecord.builder()
+                .medicalRecordId(UUID.randomUUID())
+                .patient(patientRepository.findById(patientId).orElseThrow())
+                .recordDate(LocalDate.now())
+                .diagnosis(diagnosis)
+                .treatment(treatment)
+                .build();
+
+        medicalRecordRepository.save(record);
+    }
+
 
 //    public PatientDto createPatient(PatientDto requestDto) {
 //        Patient patient = patientMapper.toEntity(requestDto);

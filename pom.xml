@@ -111,6 +111,63 @@
             <artifactId>javase</artifactId>
             <version>3.5.1</version>
         </dependency>
+
+<!--        ai chat-->
+        <!-- Основная зависимость -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>0.31.0</version> <!-- Актуальная версия -->
+        </dependency>
+
+        <!-- Дополнительные зависимости -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-open-ai</artifactId>-->
+<!--            <version>0.31.0</version> &lt;!&ndash; Актуальная версия &ndash;&gt;-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j</artifactId>-->
+<!--            <version>1.0.0-beta3</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j</artifactId>-->
+<!--            <version>0.20.0</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-document-transformer-jsoup</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>-->
+<!--        </dependency>-->
+
+        <!-- Using AI services on Azure -->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-open-ai-official</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-azure-ai-search</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>
