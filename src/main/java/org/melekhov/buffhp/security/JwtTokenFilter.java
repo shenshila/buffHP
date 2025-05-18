@@ -26,9 +26,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
         String token = resolveToken(request);
-
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
 
@@ -39,17 +37,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                             userDetails,
                             null,
                             userDetails.getAuthorities());
-
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             log.info("Authenticated user: {}", auth.getName());
             log.info("Authorities: {}", auth.getAuthorities());
         }
-
         filterChain.doFilter(request, response);
     }
 

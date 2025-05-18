@@ -20,17 +20,13 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "doctor_id")
     private UUID doctorId;
-
     @Column(nullable = false)
     private String firstName;
-
     @Column(nullable = false)
     private String lastName;
-
     private String specialization;
     private String phone;
     private String email;
-
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<Appointment> appointments;
 

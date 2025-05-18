@@ -10,7 +10,6 @@ import AuthPage from './pages/AuthPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-// Функция для извлечения роли из токена
 const getRoleFromToken = (decoded) => {
   // Проверяем разные варианты хранения ролей
   if (decoded.roles && decoded.roles.length > 0) {
@@ -31,14 +30,17 @@ function App() {
     userRole: null,
     isLoading: true
   });
+  const [isDoctor, setIsDoctor] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
+      let decoded; // Объявляем decoded здесь
+
       if (token) {
         try {
-          const decoded = jwtDecode(token);
+          decoded = jwtDecode(token);
           console.log('Decoded token:', decoded); // Для отладки
           const role = getRoleFromToken(decoded);
           
@@ -47,6 +49,10 @@ function App() {
             userRole: role,
             isLoading: false
           });
+
+          const isDoctorFromToken = decoded.roles?.includes('ROLE_DOCTOR');
+          setIsDoctor(isDoctorFromToken);
+
         } catch (err) {
           console.error('Token decode error:', err);
           localStorage.removeItem('token');
@@ -55,28 +61,34 @@ function App() {
             userRole: null,
             isLoading: false
           });
+          setIsDoctor(false);
         }
       } else {
         setAuthState(prev => ({ ...prev, isLoading: false }));
+        setIsDoctor(false);
       }
     };
-
     checkAuth();
   }, []);
 
   const handleLogin = (token) => {
-    localStorage.setItem('token', token);
-    const decoded = jwtDecode(token);
-    console.log('Decoded token on login:', decoded); // Для отладки
-    const role = getRoleFromToken(decoded);
-    
-    setAuthState({
-      isAuthenticated: true,
-      userRole: role,
-      isLoading: false
-    });
-    navigate('/');
-  };
+  localStorage.setItem('token', token);
+  const decoded = jwtDecode(token);
+  console.log('Decoded token on login:', decoded);
+  const role = getRoleFromToken(decoded);
+  
+  console.log('Role after extraction:', role); // Добавьте эту строку
+  
+  const isDoctor = decoded.roles?.includes('ROLE_DOCTOR');
+  setIsDoctor(isDoctor);
+
+  setAuthState({
+    isAuthenticated: true,
+    userRole: role,
+    isLoading: false
+  });
+  navigate('/');
+};
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -87,6 +99,10 @@ function App() {
     });
     navigate('/');
   };
+
+  console.log('AuthState in ProfilePage:', authState);
+  console.log('User role:', authState?.userRole);
+  console.log('Is doctor:', authState?.userRole === 'DOCTOR' || authState?.userRole === 'ROLE_DOCTOR');
 
   if (authState.isLoading) {
     return (
@@ -166,9 +182,13 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/patients" element={<PatientsPage />} />
-          <Route path="/patients/:id" element={<ProfilePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} />
+          {/* Исправленный маршрут с передачей authState */}
+          <Route 
+            path="/patients/:id" 
+            element={<ProfilePage authState={authState} />} 
+          />
         </Routes>
       </Container>
 

@@ -79,3 +79,35 @@ export const getPatientProfile = async (id) => {
   
   return await response.json();
 };
+
+// export const createPrescription = async (patientId, prescriptionData) => {
+//   const response = await fetch(`${API_URL}/prescriptions`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `Bearer ${localStorage.getItem('token')}`
+//     },
+//     body: JSON.stringify({
+//       patientId,
+//       ...prescriptionData
+//     })
+//   });
+
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     throw new Error(errorData.message || 'Failed to create prescription');
+//   }
+
+//   return await response.json();
+// };
+
+// export const verifyPrescription = async (code) => {
+//   const response = await fetch(`${API_URL}/prescriptions/verify/${code}`);
+
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     throw new Error(errorData.message || 'Failed to verify prescription');
+//   }
+
+//   return await response.json();
+// };

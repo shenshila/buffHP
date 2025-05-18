@@ -21,13 +21,10 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "patient_id")
     private UUID patientId;
-
     @Column(nullable = false)
     private String firstName;
-
     @Column(nullable = false)
     private String lastName;
-
     private String middleName;
     @Column(nullable = false)
     private LocalDate birthDate;
@@ -38,18 +35,13 @@ public class Patient {
     private String address;
     @Column(unique = true, nullable = false)
     private String insuranceNumber;
-
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<MedicalRecord> medicalRecords;
-
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Appointment> appointments;
-
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Prescription> prescriptions;
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 }

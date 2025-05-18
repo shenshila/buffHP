@@ -173,7 +173,7 @@ export default function PatientsPage() {
                     size="sm"
                     onClick={() => navigate(`/patients/${patient.id}`)}
                   >
-                    Профиль
+                  Профиль
                   </Button>
                 </td>
               </tr>

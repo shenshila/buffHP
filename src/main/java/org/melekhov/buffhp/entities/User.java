@@ -20,13 +20,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
     private UUID userId;
-
     @Column(nullable = false)
     private String password;
-
     @Column(unique = true, nullable = false)
     private String email;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -34,10 +31,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Patient patient;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Doctor doctor;
 }
