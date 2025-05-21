@@ -28,6 +28,7 @@ public class DoctorMapper {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .specialization(request.getSpecialization())
+                .email(request.getEmail())
                 .phone(request.getPhone())
                 .user(user)
                 .build();

@@ -16,6 +16,7 @@ public class RegistrationRequestDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String phone;
     @NonNull
     private UserRole role; // ROLE_PATIENT или ROLE_DOCTOR
 
@@ -28,6 +29,4 @@ public class RegistrationRequestDto {
 
     // Поля доктора (если роль = DOCTOR)
     private String specialization;
-    private String phone;
-
 }

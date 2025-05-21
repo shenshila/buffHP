@@ -43,7 +43,7 @@ export default function RegisterForm() {
         birthDate: formData.role === 'ROLE_PATIENT' ? formData.birthDate : null,
         insuranceNumber: formData.role === 'ROLE_PATIENT' ? formData.insuranceNumber : null,
         specialization: formData.role === 'ROLE_DOCTOR' ? formData.specialization : null,
-        phone: formData.role === 'ROLE_DOCTOR' ? formData.phone : null
+        // phone: formData.role === 'ROLE_DOCTOR' ? formData.phone : null
       };
 
       await register(requestData);
@@ -94,6 +94,17 @@ export default function RegisterForm() {
           </Form.Group>
         </Col>
       </Row>
+
+      <Form.Group className="mb-3">
+            <Form.Label>Телефон</Form.Label>
+            <Form.Control
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+      </Form.Group>
 
       <Form.Group className="mb-3">
         <Form.Label>Email</Form.Label>
@@ -202,17 +213,6 @@ export default function RegisterForm() {
             <Form.Control
               name="specialization"
               value={formData.specialization}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Телефон</Form.Label>
-            <Form.Control
-              type="tel"
-              name="phone"
-              value={formData.phone}
               onChange={handleChange}
               required
             />

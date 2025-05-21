@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage';
 import AboutPage from './pages/AboutPage';
 import AuthPage from './pages/AuthPage';
 import ChatPage from './pages/ChatPage';
+import UserProfile from './pages/UserProfilePage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -194,7 +195,7 @@ function App() {
           <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} />
           <Route path="/patients/:id" element={<ProfilePage authState={authState} />} />
           <Route path="/chat" element={<ChatPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<UserProfile authState={authState} />} />
           {/* <Route path="/profile" element={<PatientMedicalCard authState={authState} />} /> */}
         </Routes>
       </Container>

@@ -21,6 +21,8 @@ public class ProfileMapper {
                 .firstName(patient.getFirstName())
                 .lastName(patient.getLastName())
                 .middleName(patient.getMiddleName())
+                .email(patient.getEmail())
+                .address(patient.getAddress())
                 .birthDate(patient.getBirthDate())
                 .gender(patient.getGender())
                 .phoneNumber(patient.getPhone())
@@ -40,6 +42,7 @@ public class ProfileMapper {
                 .lastName(doctor.getLastName())
                 .email(doctor.getEmail())
                 .phoneNumber(doctor.getPhone())
+                .specialization(doctor.getSpecialization())
                 .appointments(appointments)
                 .prescriptions(prescriptions)
                 .build();

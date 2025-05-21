@@ -40,6 +40,7 @@ public class PatientMapper {
                 .birthDate(request.getBirthDate())
                 .gender(request.getGender())
                 .phone(request.getPhone())
+                .address(request.getAddress())
                 .insuranceNumber(request.getInsuranceNumber())
                 .user(user)
                 .build();
