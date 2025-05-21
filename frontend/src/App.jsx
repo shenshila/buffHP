@@ -7,6 +7,7 @@ import PatientsPage from './pages/PatientsPage';
 import ProfilePage from './pages/ProfilePage';
 import AboutPage from './pages/AboutPage';
 import AuthPage from './pages/AuthPage';
+import ChatPage from './pages/ChatPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -28,6 +29,7 @@ function App() {
   const [authState, setAuthState] = useState({
     isAuthenticated: false,
     userRole: null,
+    userFullName: null,
     isLoading: true
   });
   const [isDoctor, setIsDoctor] = useState(false);
@@ -47,6 +49,7 @@ function App() {
           setAuthState({
             isAuthenticated: true,
             userRole: role,
+            userFullName: decoded.fullName || '',
             isLoading: false
           });
 
@@ -72,23 +75,24 @@ function App() {
   }, []);
 
   const handleLogin = (token) => {
-  localStorage.setItem('token', token);
-  const decoded = jwtDecode(token);
-  console.log('Decoded token on login:', decoded);
-  const role = getRoleFromToken(decoded);
-  
-  console.log('Role after extraction:', role); // Добавьте эту строку
-  
-  const isDoctor = decoded.roles?.includes('ROLE_DOCTOR');
-  setIsDoctor(isDoctor);
+    localStorage.setItem('token', token);
+    const decoded = jwtDecode(token);
+    console.log('Decoded token on login:', decoded);
+    const role = getRoleFromToken(decoded);
+    
+    console.log('Role after extraction:', role); // Добавьте эту строку
+    
+    const isDoctor = decoded.roles?.includes('ROLE_DOCTOR');
+    setIsDoctor(isDoctor);
 
-  setAuthState({
-    isAuthenticated: true,
-    userRole: role,
-    isLoading: false
-  });
-  navigate('/');
-};
+    setAuthState({
+      isAuthenticated: true,
+      userRole: role,
+      userFullName: decoded.fullName || '',
+      isLoading: false
+    });
+    navigate('/');
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -127,6 +131,9 @@ function App() {
               {authState.isAuthenticated && (authState.userRole === 'ADMIN' || authState.userRole === 'DOCTOR') && (
                 <Nav.Link as={Link} to="/patients">Пациенты</Nav.Link>
               )}
+              {authState.isAuthenticated && authState.userRole === 'PATIENT' && (
+                <Nav.Link as={Link} to="/chat">Медпомощь</Nav.Link>
+              )}
               <Nav.Link as={Link} to="/about">О клинике</Nav.Link>
             </Nav>
             <Nav>
@@ -135,8 +142,9 @@ function App() {
                   title={
                     <span>
                       <i className="bi bi-person-circle me-1"></i>
-                      {authState.userRole === 'DOCTOR' ? 'Доктор' : 
-                       authState.userRole === 'ADMIN' ? 'Админ' : 'Пациент'}
+                      {authState.userFullName || 
+                        (authState.userRole === 'DOCTOR' ? 'Доктор' : 
+                         authState.userRole === 'ADMIN' ? 'Админ' : 'Пациент')}
                     </span>
                   }
                   align="end"
@@ -184,11 +192,10 @@ function App() {
           <Route path="/patients" element={<PatientsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} />
-          {/* Исправленный маршрут с передачей authState */}
-          <Route 
-            path="/patients/:id" 
-            element={<ProfilePage authState={authState} />} 
-          />
+          <Route path="/patients/:id" element={<ProfilePage authState={authState} />} />
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          {/* <Route path="/profile" element={<PatientMedicalCard authState={authState} />} /> */}
         </Routes>
       </Container>
 

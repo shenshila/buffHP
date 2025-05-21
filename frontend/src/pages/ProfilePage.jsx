@@ -259,7 +259,6 @@ export default function PatientProfile({ authState }) { // Добавляем au
             </Card.Body>
           </Card>
         </Tab>
-        {/* ... другие табы (оставьте без изменений) ... */}
 
         <Tab eventKey="prescriptions" title="Рецепты">
           <Card className="border-danger">

@@ -35,4 +35,14 @@ public class User {
     private Patient patient;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Doctor doctor;
+
+    @Transient
+    public String getFullName() {
+        if (patient != null) {
+            return patient.getFirstName() + " " + patient.getLastName();
+        } else if (doctor != null) {
+            return doctor.getFirstName() + " " + doctor.getLastName();
+        }
+        return email;
+    }
 }

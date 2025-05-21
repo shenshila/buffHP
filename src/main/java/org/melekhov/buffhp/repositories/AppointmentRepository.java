@@ -16,4 +16,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     @Query("SELECT mr FROM Appointment mr WHERE mr.patient.patientId = :patientId")
     List<Appointment> findByPatientId(@Param("patientId") UUID patientId);
 
+    @Query("SELECT mr FROM Appointment mr WHERE mr.doctor.doctorId = :doctorId")
+    List<Appointment> findByDoctorId(@Param("doctorId") UUID doctorId);
+
 }

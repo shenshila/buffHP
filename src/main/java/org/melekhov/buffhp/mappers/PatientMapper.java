@@ -12,6 +12,7 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class PatientMapper {
+
     public PatientDto toDto(Patient patient) {
 //        log.info("Converting patient to PatientDto...");
         PatientDto patientDto = PatientDto.builder()
@@ -32,6 +33,7 @@ public class PatientMapper {
 //        log.info("Converting patientDTO to Patient...");
 
         return Patient.builder()
+                .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .middleName(request.getMiddleName())
                 .lastName(request.getLastName())

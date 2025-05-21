@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.PatientDto;
 import org.melekhov.buffhp.dtos.PatientProfileDto;
+import org.melekhov.buffhp.dtos.UserProfileDto;
+import org.melekhov.buffhp.entities.Patient;
+import org.melekhov.buffhp.repositories.PatientRepository;
 import org.melekhov.buffhp.services.PatientService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -17,13 +22,14 @@ import java.util.UUID;
 @RequestMapping("api/patients")
 @RequiredArgsConstructor
 @Slf4j
-public class PatientController {
+public class DoctorController {
 
     private final PatientService patientService;
+    private final PatientRepository patientRepository;
 
     @GetMapping("/{id}/profile")
-    public ResponseEntity<PatientProfileDto> getPatientProfile(@PathVariable UUID id) {
-        PatientProfileDto patientProfileDto = patientService.getPatientProfile(id);
+    public ResponseEntity<UserProfileDto> getPatientProfile(@PathVariable UUID id) {
+        UserProfileDto patientProfileDto = patientService.getPatientProfile(id);
         return ResponseEntity.ok().body(patientProfileDto);
     }
 
@@ -43,11 +49,4 @@ public class PatientController {
         List<PatientDto> patientDtoList = patientService.filterPatients(gender, startDate, endDate);
         return ResponseEntity.ok().body(patientDtoList);
     }
-
-//    @PostMapping
-//    public ResponseEntity<PatientDto> createPatient(@RequestBody PatientDto patientDto) {
-//        PatientDto patientDto = patientService.createPatient;
-//        return ResponseEntity.ok().body(patientDto);
-//    }
-
 }

@@ -36,6 +36,7 @@ public class AIChatServiceImpl implements AIChatService {
 
         Response<AiMessage> response = chatModel.generate(messages);
 
+        log.info(response.toString());
         return response.content().text();
     }
 }

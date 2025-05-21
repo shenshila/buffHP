@@ -21,6 +21,9 @@ public class MedicalRecord {
     @Column(name = "medical_record_id")
     private UUID medicalRecordId;
 
+    @Version
+    private Long version;
+
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
@@ -28,6 +31,8 @@ public class MedicalRecord {
     private LocalDate recordDate;
     private String diagnosis;
     private String treatment;
+    private String symptoms;
+    private String source;
 
 //    @Lob
 //    private String attachments; // Можно хранить ссылки на файлы (анализы, снимки)
