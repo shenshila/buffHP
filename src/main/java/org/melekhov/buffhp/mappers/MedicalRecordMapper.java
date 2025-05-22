@@ -18,6 +18,8 @@ public class MedicalRecordMapper {
                 .recordDate(medicalRecord.getRecordDate())
                 .diagnosis(medicalRecord.getDiagnosis())
                 .treatment(medicalRecord.getTreatment())
+                .symptoms(medicalRecord.getSymptoms())
+                .source(medicalRecord.getSource())
                 .build();
     }
 }

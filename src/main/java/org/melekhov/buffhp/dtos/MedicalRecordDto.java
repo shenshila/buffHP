@@ -15,6 +15,8 @@ public class MedicalRecordDto {
     private PatientDto patient;
     private String diagnosis;
     private String treatment;
+    private String symptoms;
+    private String source;
 
     private String attachments;
 

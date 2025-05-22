@@ -17,6 +17,7 @@ public class PrescriptionMapper {
     public PrescriptionDto toDto(Prescription prescription) {
 
         return PrescriptionDto.builder()
+                .id(prescription.getPrescriptionId())
                 .patient(patientMapper.toDto(prescription.getPatient()))
                 .doctor(doctorMapper.toDoctorDto(prescription.getDoctor()))
                 .issueDate(prescription.getIssueDate())

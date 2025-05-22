@@ -103,7 +103,7 @@ public class PatientServiceImpl implements PatientService {
                     .diagnosis(diagnosis + " Сгенерировано с ИИ")
                     .treatment(treatment)
                     .symptoms(symptoms)
-                    .source("AI_CHAT")
+                    .source("AI CHAT")
                     .build();
 
             medicalRecordRepository.saveAndFlush(record); // Явное сохранение с flush
@@ -113,47 +113,4 @@ public class PatientServiceImpl implements PatientService {
             throw e;
         }
     }
-
-//    public void saveRecordFromAi(UUID patientId, String symptoms) {
-//        String aiResponse = symptomAnalysisService.analyzeSymptoms(symptoms);
-//
-//        String[] parts = aiResponse.split("Лечение:");
-//        String diagnosis = parts[0].replace("Диагноз:", "").trim();
-//        String treatment = parts.length > 1 ? parts[1].trim() : "Нет рекомендаций";
-//
-//        MedicalRecord record = MedicalRecord.builder()
-//                .medicalRecordId(UUID.randomUUID())
-//                .patient(patientRepository.findById(patientId).orElseThrow())
-//                .recordDate(LocalDate.now())
-//                .diagnosis(diagnosis)
-//                .treatment(treatment)
-//                .build();
-//
-//        medicalRecordRepository.save(record);
-//    }
-
-
-//    public PatientDto createPatient(PatientDto requestDto) {
-//        Patient patient = patientMapper.toEntity(requestDto);
-//        Patient savedPatient = patientRepository.save(patient);
-//
-//        return patientMapper.toDto(savedPatient);
-//    }
-
-    //    @Override
-//    public List<PatientDto> searchPatient(String keyword) {
-//        return patientRepository
-//                .searchByKeyword(keyword)
-//                .stream()
-//                .map(patientMapper::toDto)
-//                .collect(Collectors.toList());
-//    }
-
-    //    @Override
-//    public PatientDto findByInsuranceNumber(String insuranceNumber) {
-//        Patient patient =  patientRepository.findByInsuranceNumber(insuranceNumber)
-//                .orElseThrow(() -> new RuntimeException("Patient not found"));
-//
-//        return patientMapper.toDto(patient);
-//    }
 }
