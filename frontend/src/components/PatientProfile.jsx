@@ -11,7 +11,6 @@ import {
   Alert,
   Modal,
 } from "react-bootstrap";
-// import { useState } from 'react';
 import { motion } from "framer-motion";
 import {
   FaUser,
@@ -27,12 +26,14 @@ import {
   FaDownload,
 } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn, MdDateRange } from "react-icons/md";
+import BookAppointmentForm from "./BookAppointmentForm";
 import "../css/PatientProfile.css";
 
-const PatientProfile = ({ profile }) => {
+const PatientProfile = ({ profile, refreshProfile }) => {
   const [activeTab, setActiveTab] = useState("profile");
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
 
   const handleShowPrescription = (prescription) => {
     setSelectedPrescription(prescription);
@@ -118,7 +119,11 @@ const PatientProfile = ({ profile }) => {
                 <h6 className="mb-0">Быстрые действия</h6>
               </Card.Header>
               <Card.Body>
-                <Button variant="outline-danger" className="w-100 mb-2">
+                <Button
+                  variant="outline-danger"
+                  className="w-100 mb-2"
+                  onClick={() => setShowAppointmentModal(true)}
+                >
                   <FaEdit className="me-2" /> Записаться на прием
                 </Button>
                 <Button variant="outline-secondary" className="w-100">
@@ -279,7 +284,11 @@ const PatientProfile = ({ profile }) => {
                       <FaCalendarAlt className="me-2 text-danger" />
                       История приемов
                     </h5>
-                    <Button variant="danger" size="sm">
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => setShowAppointmentModal(true)}
+                    >
                       Записаться на прием
                     </Button>
                   </Card.Header>
@@ -368,89 +377,94 @@ const PatientProfile = ({ profile }) => {
                     {profile.medicalRecords?.length > 0 ? (
                       <div className="medical-records-container">
                         {/* [...profile.prescriptions].reverse().map((presc) */}
-                        {[...profile.medicalRecords].reverse().map((record, index) => (
-                          <Card
-                            key={record.id}
-                            className="mb-3 border-0 shadow-sm"
-                          >
-                            <Card.Header className="bg-light">
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center">
-                                  <div className="record-date-badge me-3">
-                                    <div className="day">
-                                      {new Date(record.recordDate).getDate()}
+                        {[...profile.medicalRecords]
+                          .reverse()
+                          .map((record, index) => (
+                            <Card
+                              key={record.id}
+                              className="mb-3 border-0 shadow-sm"
+                            >
+                              <Card.Header className="bg-light">
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div className="d-flex align-items-center">
+                                    <div className="record-date-badge me-3">
+                                      <div className="day">
+                                        {new Date(record.recordDate).getDate()}
+                                      </div>
+                                      <div className="month">
+                                        {new Date(
+                                          record.recordDate
+                                        ).toLocaleString("ru-RU", {
+                                          month: "short",
+                                        })}
+                                      </div>
                                     </div>
-                                    <div className="month">
-                                      {new Date(
-                                        record.recordDate
-                                      ).toLocaleString("ru-RU", {
-                                        month: "short",
-                                      })}
+                                    <div>
+                                      <h6 className="mb-0 fw-bold">
+                                        {record.diagnosis}
+                                      </h6>
+                                      <small className="text-muted">
+                                        {new Date(
+                                          record.recordDate
+                                        ).toLocaleString("ru-RU", {
+                                          year: "numeric",
+                                          month: "long",
+                                          day: "numeric",
+                                        })}
+                                      </small>
                                     </div>
                                   </div>
-                                  <div>
-                                    <h6 className="mb-0 fw-bold">
-                                      {record.diagnosis}
-                                    </h6>
-                                    <small className="text-muted">
-                                      {new Date(
-                                        record.recordDate
-                                      ).toLocaleString("ru-RU", {
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                      })}
-                                    </small>
-                                  </div>
+                                  <Badge pill bg="danger">
+                                    {record.source}
+                                  </Badge>
+                                  {/* <Badge pill bg="danger">Сгенерировано ИИ. <br /> Требуется подтверждение</Badge> */}
                                 </div>
-                                <Badge pill bg="danger">{record.source}</Badge>
-                                {/* <Badge pill bg="danger">Сгенерировано ИИ. <br /> Требуется подтверждение</Badge> */}
-                              </div>
-                            </Card.Header>
-                            <Card.Body>
-                              <div className="record-details">
-                                <div className="detail-section">
-                                  <h6 className="detail-title">
-                                    <FaNotesMedical className="me-2 text-danger" />
-                                    Лечение
-                                  </h6>
-                                  <p className="detail-content">
-                                    {record.treatment}
-                                  </p>
-                                </div>
-
-                                {record.recommendations && (
-                                  <div className="detail-section mt-3">
+                              </Card.Header>
+                              <Card.Body>
+                                <div className="record-details">
+                                  <div className="detail-section">
                                     <h6 className="detail-title">
-                                      <FaClipboardCheck className="me-2 text-danger" />
-                                      Рекомендации
+                                      <FaNotesMedical className="me-2 text-danger" />
+                                      Лечение
                                     </h6>
                                     <p className="detail-content">
-                                      {record.recommendations}
+                                      {record.treatment}
                                     </p>
                                   </div>
-                                )}
 
-                                {record.attachments && (
-                                  <div className="detail-section mt-3">
-                                    <h6 className="detail-title">
-                                      <FaPaperclip className="me-2 text-danger" />
-                                      Вложения
-                                    </h6>
-                                    <div className="mt-2">
-                                      <Button
-                                        variant="outline-danger"
-                                        size="sm"
-                                      >
-                                        <FaDownload className="me-1" /> Скачать
-                                      </Button>
+                                  {record.recommendations && (
+                                    <div className="detail-section mt-3">
+                                      <h6 className="detail-title">
+                                        <FaClipboardCheck className="me-2 text-danger" />
+                                        Рекомендации
+                                      </h6>
+                                      <p className="detail-content">
+                                        {record.recommendations}
+                                      </p>
                                     </div>
-                                  </div>
-                                )}
-                              </div>
-                            </Card.Body>
-                          </Card>
-                        ))}
+                                  )}
+
+                                  {record.attachments && (
+                                    <div className="detail-section mt-3">
+                                      <h6 className="detail-title">
+                                        <FaPaperclip className="me-2 text-danger" />
+                                        Вложения
+                                      </h6>
+                                      <div className="mt-2">
+                                        <Button
+                                          variant="outline-danger"
+                                          size="sm"
+                                        >
+                                          <FaDownload className="me-1" />{" "}
+                                          Скачать
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          ))}
                       </div>
                     ) : (
                       <Alert variant="info" className="text-center py-4">
@@ -650,6 +664,27 @@ const PatientProfile = ({ profile }) => {
           </Col>
         </Row>
       </Tab.Container>
+      <Modal
+        show={showAppointmentModal}
+        onHide={() => setShowAppointmentModal(false)}
+        size="lg"
+        centered
+        contentClassName="border-0"
+      >
+        <Modal.Header closeButton className="border-0 bg-light">
+          <Modal.Title className="fw-bold text-danger">
+            Новая запись к врачу
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0">
+          <BookAppointmentForm
+            onSuccess={() => {
+              setShowAppointmentModal(false);
+              refreshProfile();
+            }}
+          />
+        </Modal.Body>
+      </Modal>
     </motion.div>
   );
 };

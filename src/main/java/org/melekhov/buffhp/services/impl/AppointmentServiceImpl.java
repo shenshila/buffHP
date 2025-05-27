@@ -1,15 +1,13 @@
 package org.melekhov.buffhp.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.melekhov.buffhp.dtos.AppointmentDto;
-import org.melekhov.buffhp.dtos.AppointmentRequestDto;
-import org.melekhov.buffhp.dtos.AppointmentResponseDto;
-import org.melekhov.buffhp.dtos.DoctorAvailableSlotsDto;
+import org.melekhov.buffhp.dtos.*;
 import org.melekhov.buffhp.entities.Appointment;
 import org.melekhov.buffhp.entities.Doctor;
 import org.melekhov.buffhp.entities.Patient;
 import org.melekhov.buffhp.entities.enums.AppointmentStatus;
 import org.melekhov.buffhp.handler.GlobalExceptionHandler;
+import org.melekhov.buffhp.mappers.DoctorMapper;
 import org.melekhov.buffhp.repositories.AppointmentRepository;
 import org.melekhov.buffhp.repositories.DoctorRepository;
 import org.melekhov.buffhp.repositories.PatientRepository;
@@ -34,13 +32,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
 
+    private final DoctorMapper doctorMapper;
+
     private static final int APPOINTMENT_DURATION_MINUTES = 30;
     private static final LocalTime WORK_START_TIME = LocalTime.of(9, 0);
     private static final LocalTime WORK_END_TIME = LocalTime.of(17, 0);
 
     @Override
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+    public List<DoctorDto> getAllDoctors() {
+        return doctorRepository.findAll().stream()
+                .map(doctorMapper::toDoctorDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -83,9 +85,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     @Transactional
-    public AppointmentResponseDto createAppointment(AppointmentRequestDto requestDto) {
-        Patient patient = patientRepository.findById(requestDto.getPatientId())
-                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Patient not found with ID: " + requestDto.getPatientId()));
+    public AppointmentResponseDto createAppointment(UUID patientId, AppointmentRequestDto requestDto) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Patient not found with ID: " + patientId));
         Doctor doctor = doctorRepository.findById(requestDto.getDoctorId())
                 .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Doctor not found with ID: " + requestDto.getDoctorId()));
 
@@ -99,14 +101,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (isSlotBooked) {
             throw new GlobalExceptionHandler.AppointmentException("Выбранное время уже занято. Пожалуйста, выберите другой слот.");
         }
-        
+
+        boolean patientHasExistingAppointmentAtTime = appointmentRepository.findByPatientAndAppointmentDateTime(patient, requestDto.getAppointmentDateTime())
+                .stream()
+                .anyMatch(a -> a.getStatus() == AppointmentStatus.SCHEDULED);
+        if (patientHasExistingAppointmentAtTime) {
+            throw new GlobalExceptionHandler.AppointmentException("У вас уже есть запись на это время. Пожалуйста, выберите другое время.");
+        }
+
+
         Appointment newAppointment = Appointment.builder()
                 .patient(patient)
                 .doctor(doctor)
                 .appointmentDateTime(requestDto.getAppointmentDateTime())
                 .status(AppointmentStatus.SCHEDULED)
                 .build();
-        
+
         Appointment savedAppointment = appointmentRepository.save(newAppointment);
 
         return new AppointmentResponseDto(

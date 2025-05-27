@@ -4,12 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.melekhov.buffhp.dtos.AppointmentRequestDto;
 import org.melekhov.buffhp.dtos.AppointmentResponseDto;
+import org.melekhov.buffhp.dtos.DoctorAvailableSlotsDto;
+import org.melekhov.buffhp.dtos.DoctorDto;
 import org.melekhov.buffhp.entities.Appointment;
-import org.melekhov.buffhp.entities.Doctor;
 import org.melekhov.buffhp.entities.Patient;
 import org.melekhov.buffhp.repositories.AppointmentRepository;
 import org.melekhov.buffhp.repositories.PatientRepository;
 import org.melekhov.buffhp.services.AppointmentService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,8 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,18 +37,28 @@ public class AppointmentController {
 
     @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR')")
     @GetMapping("/doctors")
-    public ResponseEntity<List<Doctor>> getAllDoctors() {
+    public ResponseEntity<List<DoctorDto>> getAllDoctors() {
         return ResponseEntity.ok(appointmentService.getAllDoctors());
     }
 
-    @PreAuthorize("hasRole('PATIENT')")
-    @PostMapping    
-    public ResponseEntity<AppointmentResponseDto> createAppointment(@AuthenticationPrincipal UserDetails userDetails,
-                                                                    @Valid @RequestBody AppointmentRequestDto appointmentRequestDto) {
-        UUID patientId = getCurrentPatientId(userDetails);
-        appointmentRequestDto.setPatientId(patientId);
+    @PreAuthorize("hasAnyRole('PATIENT')")
+    @GetMapping("/available-slots")
+    public ResponseEntity<DoctorAvailableSlotsDto> getAvailableSlots(
+            @RequestParam UUID doctorId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date
+    ) {
+        DoctorAvailableSlotsDto slots = appointmentService.getAvailableSlots(doctorId, date);
+        return ResponseEntity.ok(slots);
+    }
 
-        AppointmentResponseDto newAppointment = appointmentService.createAppointment(appointmentRequestDto);
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @PostMapping
+    public ResponseEntity<AppointmentResponseDto> createAppointment(@AuthenticationPrincipal UserDetails userDetails,
+                                                                    @Valid @RequestBody AppointmentRequestDto requestDto) {
+        UUID patientId = getCurrentPatientId(userDetails);
+
+        AppointmentResponseDto newAppointment = appointmentService.createAppointment(patientId, requestDto);
         return new ResponseEntity<>(newAppointment, HttpStatus.CREATED);
     }
 
@@ -70,9 +82,8 @@ public class AppointmentController {
 
     private UUID getCurrentPatientId(UserDetails userDetails) {
         String username = userDetails.getUsername();
-        Patient patient = patientRepository.findByUserEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-
+        Patient patient = patientRepository.findByUserEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Patient not found for user: " + username));
         return patient.getPatientId();
     }
 
