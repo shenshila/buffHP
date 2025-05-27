@@ -15,4 +15,6 @@ public class AppointmentDto {
     private DoctorDto doctor;
     private LocalDateTime appointmentDate;
     private AppointmentStatus appointmentStatus;
+    private Boolean isBooked;
+    private String reason;
 }

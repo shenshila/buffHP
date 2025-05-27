@@ -19,4 +19,11 @@ public class GlobalExceptionHandler {
             super(message);
         }
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // Возвращаем 400 Bad Request для бизнес-логики
+    public static class AppointmentException extends RuntimeException {
+        public AppointmentException(String message) {
+            super(message);
+        }
+    }
 }

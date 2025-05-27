@@ -7,8 +7,26 @@ import {
   Button,
   NavDropdown,
   Spinner,
+  Carousel,
+  Card,
+  Row,
+  Col,
+  Badge,
 } from "react-bootstrap";
 import { jwtDecode } from "jwt-decode";
+import {
+  FaHeartbeat,
+  FaUserMd,
+  FaUserInjured,
+  FaCalendarAlt,
+  FaClinicMedical,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaClock,
+  FaNotesMedical,
+  FaFilePrescription,
+  FaSearch,
+} from "react-icons/fa";
 import HomePage from "./pages/HomePage";
 import PatientsPage from "./pages/PatientsPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -16,6 +34,7 @@ import AboutPage from "./pages/AboutPage";
 import AuthPage from "./pages/AuthPage";
 import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfilePage";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -120,7 +139,7 @@ function App() {
 
   if (authState.isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
         <Spinner animation="border" variant="danger" />
       </div>
     );
@@ -128,59 +147,55 @@ function App() {
 
   return (
     <>
-      <Navbar expand="lg" className="mb-4 shadow-sm">
+      {/* Улучшенный Navbar */}
+      <Navbar expand="lg" className="py-3 shadow-sm bg-white sticky-top">
         <Container>
-          <Navbar.Brand as={Link} to="/" className="fw-bold">
-            <i className="bi bi-heart-pulse text-danger me-2"></i>
-            buff<span className="text-danger">HP</span>
+          <Navbar.Brand as={Link} to="/" className="fw-bold fs-3">
+            <FaHeartbeat className="text-danger me-2" />
+            <span className="text-dark">Med</span>
+            <span className="text-danger">Care</span>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} to="/">
+
+          <Navbar.Toggle aria-controls="main-nav" />
+
+          <Navbar.Collapse id="main-nav">
+            <Nav className="mx-auto">
+              <Nav.Link as={Link} to="/" className="fw-medium mx-2">
                 Главная
               </Nav.Link>
               {authState.isAuthenticated &&
                 (authState.userRole === "ADMIN" ||
                   authState.userRole === "DOCTOR") && (
-                  <Nav.Link as={Link} to="/patients">
-                    Пациенты
+                  <Nav.Link as={Link} to="/patients" className="fw-medium mx-2">
+                    <FaUserInjured className="me-1" /> Пациенты
                   </Nav.Link>
                 )}
               {authState.isAuthenticated &&
                 authState.userRole === "PATIENT" && (
-                  <Nav.Link as={Link} to="/chat">
-                    Медпомощь
+                  <Nav.Link as={Link} to="/chat" className="fw-medium mx-2">
+                    <FaNotesMedical className="me-1" /> Медпомощь
                   </Nav.Link>
                 )}
-              <Nav.Link as={Link} to="/about">
-                О клинике
+              <Nav.Link as={Link} to="/about" className="fw-medium mx-2">
+                <FaClinicMedical className="me-1" /> О клинике
               </Nav.Link>
             </Nav>
+
             <Nav>
               {authState.isAuthenticated ? (
-                <NavDropdown
-                  title={
-                    <span>
-                      <i className="bi bi-person-circle me-1"></i>
-                      {authState.userFullName ||
-                        (authState.userRole === "DOCTOR"
-                          ? "Доктор"
-                          : authState.userRole === "ADMIN"
-                          ? "Админ"
-                          : "Пациент")}
-                    </span>
-                  }
-                  align="end"
-                >
-                  <NavDropdown.Item as={Link} to="/profile">
-                    Мой профиль
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={handleLogout}>
+                <>
+                  <Button
+                    variant="outline-danger"
+                    as={Link}
+                    to="/profile"
+                    className="me-3"
+                  >
+                    <FaUserMd className="me-1" /> Личный кабинет
+                  </Button>
+                  <Button variant="danger" onClick={handleLogout}>
                     Выйти
-                  </NavDropdown.Item>
-                </NavDropdown>
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button
@@ -198,17 +213,15 @@ function App() {
                   </Button>
                 </>
               )}
-              <Button variant="danger" className="ms-2">
-                <i className="bi bi-telephone me-1"></i> Запись
-              </Button>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
+      {/* Routes */}
       <Container className="py-4 mb-4">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage authState={authState} />} />
           <Route path="/patients" element={<PatientsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} />
@@ -221,24 +234,58 @@ function App() {
             path="/profile"
             element={<UserProfile authState={authState} />}
           />
-          {/* <Route path="/profile" element={<PatientMedicalCard authState={authState} />} /> */}
+          <Route path="/doctor/analytics" element={<AnalyticsDashboard authState={authState}/>} />
         </Routes>
       </Container>
 
-      <footer className="bg-light border-2 py-3 mt-4">
+      {/* Footer */}
+      <footer className="bg-dark text-white py-4">
         <Container>
-          <div className="d-flex justify-content-between align-items-center">
+          <Row>
+            <Col md={4} className="mb-4">
+              <h5 className="mb-3">
+                <FaHeartbeat className="text-danger me-2" />
+                <span>Med</span>
+                <span className="text-danger">Care</span>
+              </h5>
+              <p>
+                Современная система управления медицинскими данными для врачей и
+                пациентов.
+              </p>
+            </Col>
+            <Col md={4} className="mb-4">
+              <h5 className="mb-3">Контакты</h5>
+              <p>
+                <FaPhoneAlt className="me-2" /> 8 (800) 123-45-67
+              </p>
+              <p>
+                <FaMapMarkerAlt className="me-2" /> г. Саратов, ул. Медицинская,
+                1
+              </p>
+              <p>
+                <FaClock className="me-2" /> Пн-Пт: 8:00 - 20:00
+              </p>
+            </Col>
+            <Col md={4} className="mb-4">
+              <h5 className="mb-3">Быстрые ссылки</h5>
+              <Nav className="flex-column">
+                <Nav.Link as={Link} to="/" className="text-white p-0 mb-2">
+                  Главная
+                </Nav.Link>
+                <Nav.Link as={Link} to="/about" className="text-white p-0 mb-2">
+                  О клинике
+                </Nav.Link>
+                <Nav.Link as={Link} to="/auth" className="text-white p-0 mb-2">
+                  Вход/Регистрация
+                </Nav.Link>
+              </Nav>
+            </Col>
+          </Row>
+          <hr className="my-4" />
+          <div className="text-center">
             <p className="mb-0">
-              © {new Date().getFullYear()} buffHP Медицинский центр
+              © {new Date().getFullYear()} MedCare. Все права защищены.
             </p>
-            <div>
-              <a href="#" className="text-dark me-3">
-                <i className="bi bi-telephone"></i> 8 (800) 123-45-67
-              </a>
-              <a href="#" className="text-dark">
-                <i className="bi bi-geo-alt"></i> г. Саратов
-              </a>
-            </div>
           </div>
         </Container>
       </footer>

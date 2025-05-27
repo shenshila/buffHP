@@ -32,4 +32,6 @@ public class Appointment {
 
     private LocalDateTime appointmentDateTime;
     private AppointmentStatus status; // "SCHEDULED", "COMPLETED", "CANCELED"
+
+    private Boolean isBooked;
 }

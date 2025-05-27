@@ -154,5 +154,17 @@ body {
   height: 100%;
 }
 
+.step-number {
+  width: 30px; /* Или желаемая ширина */
+  height: 30px; /* Должно быть равно ширине */
+  border-radius: 50%; /* Делает элемент круглым */
+  background-color: red; /* или bg-danger из Bootstrap */
+  color: white; /* или text-white из Bootstrap */
+  display: inline-flex; /* Важно для центрирования контента */
+  align-items: center; /* Центрирование по вертикали */
+  justify-content: center; /* Центрирование по горизонтали */
+  /* Дополнительные стили, которые вам нужны */
+}
+
 /* Подключение иконок Bootstrap */
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
