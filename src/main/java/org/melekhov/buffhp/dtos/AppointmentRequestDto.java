@@ -21,5 +21,5 @@ public class AppointmentRequestDto {
     @NotNull(message = "Appointment date and time is mandatory")
     private LocalDateTime appointmentDateTime;
     // Можно добавить причину визита
-    private String reason;
+//    private String reason;
 }
