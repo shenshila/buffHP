@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.*;
 import org.melekhov.buffhp.entities.MedicalRecord;
 import org.melekhov.buffhp.entities.Patient;
+import org.melekhov.buffhp.entities.enums.MedicalRecordSource;
 import org.melekhov.buffhp.handler.GlobalExceptionHandler;
 import org.melekhov.buffhp.mappers.*;
 import org.melekhov.buffhp.repositories.*;
@@ -103,7 +104,7 @@ public class PatientServiceImpl implements PatientService {
                     .diagnosis(diagnosis)
                     .treatment(treatment)
                     .symptoms(symptoms)
-                    .source("AI CHAT")
+                    .source(MedicalRecordSource.AI)
                     .build();
 
             medicalRecordRepository.saveAndFlush(record);

@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.melekhov.buffhp.entities.enums.MedicalRecordSource;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -32,7 +34,13 @@ public class MedicalRecord {
     private String diagnosis;
     private String treatment;
     private String symptoms;
-    private String source;
+    private MedicalRecordSource source;
+
+    @ManyToOne
+    @JoinColumn(name = "confirmed_by_doctor_id")
+    private Doctor confirmedByDoctor;
+
+    private LocalDateTime confirmedDate;
 
 //    @Lob
 //    private String attachments; // Можно хранить ссылки на файлы (анализы, снимки)

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.melekhov.buffhp.entities.enums.MedicalRecordSource;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class MedicalRecordDto {
     private String diagnosis;
     private String treatment;
     private String symptoms;
-    private String source;
+    private MedicalRecordSource source;
 
     private String attachments;
 

@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.melekhov.buffhp.entities.enums.MedicalRecordSource;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -21,6 +23,11 @@ public class MedicalRecordResponseDto {
     private String diagnosis;
     private String treatment;
     private String symptoms;
-    private String source;
+    private MedicalRecordSource source;
     private Long version;
+
+    private UUID confirmedByDoctorId;
+    private String confirmedByDoctorFirstName;
+    private String confirmedByDoctorLastName;
+    private LocalDateTime confirmedDate;
 }

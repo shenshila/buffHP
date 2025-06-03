@@ -1,14 +1,19 @@
 package org.melekhov.buffhp.controllers;
 
+import com.sun.security.auth.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.MedicalRecordRequestDto;
 import org.melekhov.buffhp.dtos.MedicalRecordResponseDto;
+import org.melekhov.buffhp.repositories.DoctorRepository;
 import org.melekhov.buffhp.services.MedicalRecordService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:3000")
 public class MedicalRecordController {
     private final MedicalRecordService medicalRecordService;
+    private final DoctorRepository doctorRepository;
 
     @PreAuthorize("hasRole('DOCTOR') or (hasRole('PATIENT') and @patientSecurity.isOwner(#patientId))")
     @GetMapping("/patient/{patientId}")
@@ -56,5 +62,21 @@ public class MedicalRecordController {
     public ResponseEntity<Void> deleteMedicalRecord(@PathVariable UUID recordId) {
         medicalRecordService.deleteMedicalRecord(recordId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('DOCTOR')")
+    @PostMapping("/{recordId}/confirm")
+    public ResponseEntity<MedicalRecordResponseDto> confirmMedicalRecord(@PathVariable UUID recordId,
+                                                                         @AuthenticationPrincipal UserDetails userDetails) {
+        UUID doctorId = getCurrentDoctorId(userDetails);
+        MedicalRecordResponseDto confirmedRecord = medicalRecordService.confirmMedicalRecord(recordId, doctorId);
+        return ResponseEntity.ok(confirmedRecord);
+    }
+
+    private UUID getCurrentDoctorId(UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return doctorRepository.findByUserEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Doctor not found for user: " + username))
+                .getDoctorId();
     }
 }

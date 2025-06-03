@@ -4,15 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.MedicalRecordRequestDto;
 import org.melekhov.buffhp.dtos.MedicalRecordResponseDto;
+import org.melekhov.buffhp.entities.Doctor;
 import org.melekhov.buffhp.entities.MedicalRecord;
 import org.melekhov.buffhp.entities.Patient;
+import org.melekhov.buffhp.entities.enums.MedicalRecordSource;
 import org.melekhov.buffhp.handler.GlobalExceptionHandler;
+import org.melekhov.buffhp.repositories.DoctorRepository;
 import org.melekhov.buffhp.repositories.MedicalRecordRepository;
 import org.melekhov.buffhp.repositories.PatientRepository;
 import org.melekhov.buffhp.services.MedicalRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 public class MedicalRecordServiceImpl implements MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
 
     @Override
     public List<MedicalRecordResponseDto> getMedicalRecordsByPatientId(UUID patientId) {
@@ -55,7 +61,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
                 .diagnosis(requestDto.getDiagnosis())
                 .treatment(requestDto.getTreatment())
                 .symptoms(requestDto.getSymptoms())
-                .source(requestDto.getSource() != null ? requestDto.getSource() : "Doctor")
+                .source(MedicalRecordSource.valueOf(requestDto.getSource() != null ? requestDto.getSource() : "Doctor"))
                 .build();
 
         MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medicalRecord);
@@ -76,7 +82,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         existingRecord.setDiagnosis(requestDto.getDiagnosis());
         existingRecord.setTreatment(requestDto.getTreatment());
         existingRecord.setSymptoms(requestDto.getSymptoms());
-        existingRecord.setSource(requestDto.getSource() != null ? requestDto.getSource() : existingRecord.getSource());
+        existingRecord.setSource(requestDto.getSource() != null ? MedicalRecordSource.valueOf(requestDto.getSource()) : existingRecord.getSource());
 
         MedicalRecord updatedRecord = medicalRecordRepository.save(existingRecord);
         return mapToResponseDto(updatedRecord);
@@ -92,7 +98,31 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
 
     @Override
-    public MedicalRecordResponseDto mapToResponseDto(MedicalRecord medicalRecord) {
+    @Transactional
+    public MedicalRecordResponseDto confirmMedicalRecord(UUID recordId, UUID doctorId) {
+        MedicalRecord existingRecord = medicalRecordRepository.findById(recordId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Medical record not found with ID: " + recordId));
+
+        if (!MedicalRecordSource.AI.equals(existingRecord.getSource()) && !MedicalRecordSource.AI_PROPOSED.equals(existingRecord.getSource())) {
+            throw new GlobalExceptionHandler.AppointmentException("Эту запись невозможно подтвердить, так как она не была предложена ИИ.");
+        }
+        if (existingRecord.getConfirmedByDoctor() != null) {
+            throw new GlobalExceptionHandler.AppointmentException("Эта запись уже была подтверждена доктором.");
+        }
+
+        Doctor confirmingDoctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Doctor not found with ID: " + doctorId));
+
+        existingRecord.setSource(MedicalRecordSource.AI_PROPOSED);
+        existingRecord.setConfirmedByDoctor(confirmingDoctor);
+        existingRecord.setConfirmedDate(LocalDateTime.now());
+
+        MedicalRecord updatedMedicalRecord = medicalRecordRepository.save(existingRecord);
+
+        return mapToResponseDto(updatedMedicalRecord);
+    }
+
+    private MedicalRecordResponseDto mapToResponseDto(MedicalRecord medicalRecord) {
         return new MedicalRecordResponseDto(
                 medicalRecord.getMedicalRecordId(),
                 medicalRecord.getPatient().getPatientId(),
@@ -103,7 +133,11 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
                 medicalRecord.getTreatment(),
                 medicalRecord.getSymptoms(),
                 medicalRecord.getSource(),
-                medicalRecord.getVersion()
+                medicalRecord.getVersion(),
+                medicalRecord.getConfirmedByDoctor() != null ? medicalRecord.getConfirmedByDoctor().getDoctorId() : null,
+                medicalRecord.getConfirmedByDoctor() != null ? medicalRecord.getConfirmedByDoctor().getFirstName() : null,
+                medicalRecord.getConfirmedByDoctor() != null ? medicalRecord.getConfirmedByDoctor().getLastName() : null,
+                medicalRecord.getConfirmedDate()
         );
     }
 }

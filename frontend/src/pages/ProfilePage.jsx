@@ -23,9 +23,10 @@ import {
   createMedicalRecord,
   updateMedicalRecord,
   deleteMedicalRecord,
+  confirmMedicalRecord
 } from "../api/medicalRecordsApi";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/PatientProfile.css";
+import "../css/ProfilePage.css";
 
 export default function PatientProfile({ authState }) {
   console.log("AuthState in ProfilePage:", authState);
@@ -43,6 +44,7 @@ export default function PatientProfile({ authState }) {
   const [verificationResult, setVerificationResult] = useState(null);
 
   // Состояния для работы с медицинскими записями
+  const [confirmationStatus, setConfirmationStatus] = useState(null); 
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [showViewRecordModal, setShowViewRecordModal] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
@@ -237,6 +239,25 @@ export default function PatientProfile({ authState }) {
     setShowRecordModal(true);
   };
 
+  const handleConfirmRecord = async (recordId) => {
+  try {
+    // Изменено: переименована переменная и использована правильная функция API
+    const confirmedRecordData = await confirmMedicalRecord(recordId);
+
+    // Обновляем список записей
+    const updatedPatient = { ...patient };
+    updatedPatient.medicalRecords = patient.medicalRecords.map(record =>
+      record.medicalRecordId === recordId ? confirmedRecordData : record // Изменено: используем confirmedRecordData
+    );
+    setPatient(updatedPatient);
+
+    setConfirmationStatus({ success: true, message: 'Запись успешно подтверждена' });
+    setTimeout(() => setConfirmationStatus(null), 3000);
+  } catch (err) {
+    setConfirmationStatus({ success: false, message: 'Ошибка подтверждения: ' + err.message });
+  }
+};
+
   if (loading)
     return (
       <div className="text-center py-5">
@@ -415,6 +436,16 @@ export default function PatientProfile({ authState }) {
                           <td>{record.recordDate}</td>
                           <td>
                             <Badge bg="danger">{record.diagnosis}</Badge>
+                            {record.confirmedBy && (
+                              <Badge bg="success" className="ms-2">
+                                Подтверждено
+                              </Badge>
+                            )}
+                            {record.source === "AI" && !record.confirmedBy && (
+                              <Badge bg="warning" className="ms-2">
+                                Требует подтверждения
+                              </Badge>
+                            )}
                           </td>
                           <td>
                             {record.treatment.substring(0, 50)}
@@ -435,6 +466,10 @@ export default function PatientProfile({ authState }) {
                                     variant="outline-secondary"
                                     size="sm"
                                     onClick={() => handleEditRecord(record)}
+                                    disabled={
+                                      record.source === "AI" &&
+                                      !record.confirmedBy
+                                    }
                                   >
                                     Изменить
                                   </Button>
@@ -627,11 +662,33 @@ export default function PatientProfile({ authState }) {
         <Modal.Header closeButton>
           <Modal.Title>
             Медицинская запись от {currentRecord?.recordDate}
+            {currentRecord?.confirmedBy && (
+              <Badge bg="success" className="ms-2">
+                Подтверждено
+              </Badge>
+            )}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {currentRecord && (
             <div>
+              {confirmationStatus && (
+                <Alert
+                  variant={confirmationStatus.success ? "success" : "danger"}
+                >
+                  {confirmationStatus.message}
+                </Alert>
+              )}
+
+              <div className="mb-3">
+                <h5>Источник:</h5>
+                <Badge bg={currentRecord.source === "AI" ? "info" : "primary"}>
+                  {currentRecord.source === "AI"
+                    ? "Сгенерировано ИИ"
+                    : "Создано врачом"}
+                </Badge>
+              </div>
+
               <div className="mb-3">
                 <h5>Диагноз:</h5>
                 <Badge bg="danger">{currentRecord.diagnosis}</Badge>
@@ -642,12 +699,40 @@ export default function PatientProfile({ authState }) {
                 <p>{currentRecord.treatment}</p>
               </div>
 
-              {currentRecord.notes && (
+              {currentRecord.symptoms && (
                 <div className="mb-3">
-                  <h5>Примечания:</h5>
-                  <p>{currentRecord.notes}</p>
+                  <h5>Симптомы:</h5>
+                  <p>{currentRecord.symptoms}</p>
                 </div>
               )}
+
+              {/* Добавляем информацию о подтвердившем враче, если есть */}
+              {currentRecord.confirmedBy && (
+                <div className="mb-3">
+                  <h5>Подтверждено:</h5>
+                  <p>
+                    {currentRecord.confirmedBy.lastName}{" "}
+                    {currentRecord.confirmedBy.firstName}
+                  </p>
+                </div>
+              )}
+
+              {/* Добавляем кнопку подтверждения для записей ИИ, если пользователь - врач */}
+              {isDoctor &&
+                currentRecord.source === "AI" &&
+                !currentRecord.confirmedBy && (
+                  <div className="mt-4">
+                    <Button
+                      variant="success"
+                      onClick={() =>
+                        handleConfirmRecord(currentRecord.medicalRecordId)
+                      }
+                    >
+                      <i className="bi bi-check-circle me-1"></i> Подтвердить
+                      диагноз
+                    </Button>
+                  </div>
+                )}
 
               {currentRecord.attachments &&
                 currentRecord.attachments.length > 0 && (

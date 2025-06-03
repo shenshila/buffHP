@@ -72,3 +72,17 @@ export const deleteMedicalRecord = async (recordId) => {
   
   return true;
 };
+
+export const confirmMedicalRecord = async (recordId) => {
+  const response = await fetch(`${API_URL}/${recordId}/confirm`, {
+    method: 'POST',
+    headers: getAuthHeaders()
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to confirm medical record');
+  }
+  
+  return await response.json();
+};

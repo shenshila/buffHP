@@ -15,5 +15,5 @@ public interface MedicalRecordService {
     MedicalRecordResponseDto createMedicalRecord(MedicalRecordRequestDto requestDto);
     MedicalRecordResponseDto updateMedicalRecord(UUID recordId, MedicalRecordRequestDto requestDto);
     void deleteMedicalRecord(UUID recordId);
-    MedicalRecordResponseDto mapToResponseDto(MedicalRecord medicalRecord);
+    MedicalRecordResponseDto confirmMedicalRecord(UUID recordId, UUID doctorId);
 }
