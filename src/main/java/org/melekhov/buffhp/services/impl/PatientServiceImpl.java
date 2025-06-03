@@ -77,7 +77,7 @@ public class PatientServiceImpl implements PatientService {
                 .map(appointmentMapper::toDto)
                 .toList();
 
-        List<MedicalRecordDto> medicalRecordDtoList = medicalRecordRepository.findByPatientId(id)
+        List<MedicalRecordDto> medicalRecordDtoList = medicalRecordRepository.findByPatient_PatientIdOrderByRecordDateDesc(id)
                 .stream()
                 .map(medicalRecordMapper::toMedicalRecordDto)
                 .toList();
@@ -98,19 +98,46 @@ public class PatientServiceImpl implements PatientService {
             String treatment = parts.length > 1 ? parts[1].trim() : "Нет рекомендаций";
 
             MedicalRecord record = MedicalRecord.builder()
-                    .patient(patientRepository.getReferenceById(patientId)) // Используем getReferenceById
+                    .patient(patientRepository.getReferenceById(patientId))
                     .recordDate(LocalDate.now())
-                    .diagnosis(diagnosis + " Сгенерировано с ИИ")
+                    .diagnosis(diagnosis)
                     .treatment(treatment)
                     .symptoms(symptoms)
                     .source("AI CHAT")
                     .build();
 
-            medicalRecordRepository.saveAndFlush(record); // Явное сохранение с flush
+            medicalRecordRepository.saveAndFlush(record);
             log.info("Запись успешно сохранена для пациента {}", patientId);
         } catch (Exception e) {
             log.error("Ошибка при сохранении записи: {}", e.getMessage());
             throw e;
         }
     }
+
+//  --- Методы для MedicalRecord, перенесенные из предложенного MedicalRecordService ---
+
+//    @Override
+//    public MedicalRecordResponseDto createMedicalRecord(UUID patientId, MedicalRecordRequestDto requestDto) {
+//        return null;
+//    }
+//
+//    @Override
+//    public MedicalRecordResponseDto updateMedicalRecord(UUID recordId, MedicalRecordRequestDto requestDto) {
+//        return null;
+//    }
+//
+//    @Override
+//    public void deleteMedicalRecord(UUID recordId) {
+//
+//    }
+//
+//    @Override
+//    public MedicalRecordResponseDto getMedicalRecordById(UUID recordId) {
+//        return null;
+//    }
+//
+//    @Override
+//    public List<MedicalRecordResponseDto> getMedicalRecordsByPatientId(UUID patientId) {
+//        return List.of();
+//    }
 }

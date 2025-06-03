@@ -2,7 +2,6 @@ package org.melekhov.buffhp.dtos;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;

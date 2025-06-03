@@ -1,5 +1,7 @@
 package org.melekhov.buffhp.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,18 +12,18 @@ import java.util.UUID;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class MedicalRecordDto {
-
-    private UUID id;
+@NoArgsConstructor
+public class MedicalRecordRequestDto {
+    @NotNull(message = "Patient ID is mandatory")
+    private UUID patientId;
+    @NotNull(message = "Record date is mandatory")
     private LocalDate recordDate;
-    private PatientDto patient;
+    @NotBlank(message = "Diagnosis is mandatory")
     private String diagnosis;
     private String treatment;
     private String symptoms;
     private String source;
 
     private String attachments;
-
 }

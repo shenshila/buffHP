@@ -19,7 +19,8 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
     @Query("SELECT mr FROM MedicalRecord mr WHERE mr.patient.patientId = :patientId")
     List<MedicalRecord> findByPatientId(@Param("patientId") UUID patientId);
 
-    // 1. Динамика заболеваемости по времени (по месяцам)
+    List<MedicalRecord> findByPatient_PatientIdOrderByRecordDateDesc(UUID patientId);
+
     @Query("SELECT new org.melekhov.buffhp.dtos.DiseaseCountByDateDto(mr.diagnosis, " +
             "CAST(DATE_TRUNC('month', mr.recordDate) AS LocalDate), COUNT(mr)) " +
             "FROM MedicalRecord mr " +

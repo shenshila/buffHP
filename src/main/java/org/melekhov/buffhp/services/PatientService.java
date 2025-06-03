@@ -1,5 +1,7 @@
 package org.melekhov.buffhp.services;
 
+import org.melekhov.buffhp.dtos.MedicalRecordRequestDto;
+import org.melekhov.buffhp.dtos.MedicalRecordResponseDto;
 import org.melekhov.buffhp.dtos.PatientDto;
 import org.melekhov.buffhp.dtos.UserProfileDto;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,13 @@ public interface PatientService {
 
     UserProfileDto getPatientProfile(UUID id);
 
+    void saveRecordFromAi(UUID patientId, String symptoms, String aiResponse); // Твой существующий метод
+
+//    MedicalRecordResponseDto createMedicalRecord(UUID patientId, MedicalRecordRequestDto requestDto);
+//    MedicalRecordResponseDto updateMedicalRecord(UUID recordId, MedicalRecordRequestDto requestDto);
+//    void deleteMedicalRecord(UUID recordId);
+//    MedicalRecordResponseDto getMedicalRecordById(UUID recordId);
+//    List<MedicalRecordResponseDto> getMedicalRecordsByPatientId(UUID patientId); // Ты уже получаешь их через UserProfileDto, но этот метод может быть полезен для отдельного API или обновления списка
     // no using
 //    List<PatientDto> searchPatient(String keyword);
 

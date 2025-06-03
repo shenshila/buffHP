@@ -10,18 +10,17 @@ import java.util.UUID;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class MedicalRecordDto {
-
-    private UUID id;
+@NoArgsConstructor
+public class MedicalRecordResponseDto {
+    private UUID medicalRecordId;
+    private UUID patientId;
+    private String patientFirstName;
+    private String patientLastName;
     private LocalDate recordDate;
-    private PatientDto patient;
     private String diagnosis;
     private String treatment;
     private String symptoms;
     private String source;
-
-    private String attachments;
-
+    private Long version;
 }
