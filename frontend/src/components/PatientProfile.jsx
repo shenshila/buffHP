@@ -27,6 +27,7 @@ import {
 } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn, MdDateRange } from "react-icons/md";
 import BookAppointmentForm from "./BookAppointmentForm";
+import * as appointmentApi from "../api/appointmentApi";
 import "../css/PatientProfile.css";
 
 const PatientProfile = ({ profile, refreshProfile }) => {
@@ -34,6 +35,8 @@ const PatientProfile = ({ profile, refreshProfile }) => {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [cancelError, setCancelError] = useState(null); 
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null); 
 
   const handleShowPrescription = (prescription) => {
     setSelectedPrescription(prescription);
@@ -45,11 +48,32 @@ const PatientProfile = ({ profile, refreshProfile }) => {
     setSelectedPrescription(null);
   };
 
+  const handleCancelAppointment = async (appointmentId) => {
+    if (window.confirm("Вы уверены, что хотите отменить этот прием?")) {
+      setCancellingAppointmentId(appointmentId);
+      setCancelError(null);
+      try {
+        await appointmentApi.cancelAppointment(appointmentId);
+        // alert("Прием успешно отменен!"); 
+        if (refreshProfile) { 
+          await refreshProfile(); 
+        }
+      } catch (err) {
+        console.error("Ошибка при отмене приема:", err);
+        setCancelError(err.message || "Не удалось отменить прием.");
+      } finally {
+        setCancellingAppointmentId(null);
+      }
+    }
+  };
+
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("ru-RU", {
       year: "numeric",
       month: "long",
       day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit", 
     });
 
   const fadeIn = {
@@ -293,67 +317,102 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                     </Button>
                   </Card.Header>
                   <Card.Body>
+                    {cancelError && (
+                      <Alert variant="danger" className="mb-3">
+                        {cancelError}
+                      </Alert>
+                    )}
                     {profile.appointments?.length > 0 ? (
                       <div className="timeline">
-                        {profile.appointments.map((app) => (
-                          <div
-                            key={app.appointmentId}
-                            className="timeline-item"
-                          >
-                            <div className="timeline-badge">
-                              {app.appointmentStatus === "COMPLETED" ? (
-                                <span className="bg-success">
-                                  <FaCalendarAlt />
-                                </span>
-                              ) : app.appointmentStatus === "CANCELED" ? (
-                                <span className="bg-danger">
-                                  <FaCalendarAlt />
-                                </span>
-                              ) : (
-                                <span className="bg-warning">
-                                  <FaCalendarAlt />
-                                </span>
-                              )}
-                            </div>
-                            <div className="timeline-panel">
-                              <div className="timeline-heading">
-                                <h5 className="timeline-title">
-                                  Прием у {app.doctor.firstName}{" "}
-                                  {app.doctor.lastName}
-                                </h5>
-                                <p className="text-muted">
-                                  <small>
-                                    {formatDate(app.appointmentDate)}
-                                  </small>
-                                </p>
+                        {[...profile.appointments]
+                          .sort(
+                            (a, b) =>
+                              new Date(b.appointmentDate) - 
+                              new Date(a.appointmentDate)
+                          )
+                          .map((app) => (
+                            <div
+                              key={app.appointmentId}
+                              className="timeline-item"
+                            >
+                              <div className="timeline-badge">
+                                {app.appointmentStatus === "COMPLETED" ? (
+                                  <span className="bg-success">
+                                    <FaCalendarAlt />
+                                  </span>
+                                ) : app.appointmentStatus === "CANCELED" ? (
+                                  <span className="bg-danger">
+                                    <FaCalendarAlt />
+                                  </span>
+                                ) : (
+                                  <span className="bg-warning">
+                                    <FaCalendarAlt />
+                                  </span>
+                                )}
                               </div>
-                              <div className="timeline-body">
-                                <p>
-                                  <Badge
-                                    bg={
-                                      app.appointmentStatus === "COMPLETED"
-                                        ? "success"
+                              <div className="timeline-panel">
+                                <div className="timeline-heading">
+                                  <h5 className="timeline-title">
+                                    Прием у {app.doctor.firstName}{" "}
+                                    {app.doctor.lastName}
+                                  </h5>
+                                  <p className="text-muted">
+                                    <small>
+                                      {formatDate(app.appointmentDate)}
+                                    </small>
+                                  </p>
+                                </div>
+                                <div className="timeline-body">
+                                  <p>
+                                    <Badge
+                                      bg={
+                                        app.appointmentStatus === "COMPLETED"
+                                          ? "success"
+                                          : app.appointmentStatus === "CANCELED"
+                                          ? "danger"
+                                          : "warning"
+                                      }
+                                      className="me-2"
+                                    >
+                                      {app.appointmentStatus === "COMPLETED"
+                                        ? "Завершен"
                                         : app.appointmentStatus === "CANCELED"
-                                        ? "danger"
-                                        : "warning"
-                                    }
-                                    className="me-2"
-                                  >
-                                    {app.appointmentStatus === "COMPLETED"
-                                      ? "Завершен"
-                                      : app.appointmentStatus === "CANCELED"
-                                      ? "Отменен"
-                                      : "Запланирован"}
-                                  </Badge>
-                                  Специализация: {app.doctor.specialization}
-                                </p>
-                                <Button variant="outline-danger" size="sm">
-                                  Подробнее
-                                </Button>
+                                        ? "Отменен"
+                                        : "Запланирован"}
+                                    </Badge>
+                                    Специализация: {app.doctor.specialization}
+                                  </p>
+                                  {(
+                                      <Button variant="outline-secondary" size="sm" className="mt-2 me-2">
+                                          Подробнее
+                                      </Button>
+                                  )}
+                                  {/* Кнопка отмены приема */}
+                                  {app.appointmentStatus === "SCHEDULED" && (
+                                    <Button
+                                      variant="outline-danger"
+                                      size="sm"
+                                      className="mt-2"
+                                      onClick={() =>
+                                        handleCancelAppointment(
+                                          app.appointmentId
+                                        )
+                                      }
+                                      disabled={
+                                        cancellingAppointmentId ===
+                                        app.appointmentId
+                                      }
+                                    >
+                                      {cancellingAppointmentId ===
+                                      app.appointmentId
+                                        ? "Отмена..."
+                                        : "Отменить прием"}
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     ) : (
                       <Alert variant="info">

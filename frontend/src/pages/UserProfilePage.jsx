@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; 
 import { Container, Card, Spinner, Tab, Tabs } from "react-bootstrap";
 import userApi from "../api/userApi";
 import DoctorProfile from "../components/DoctorProfile";
@@ -9,22 +9,26 @@ const UserProfile = ({ authState }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("profile"); 
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await userApi.getCurrentUserProfile();
+      setProfile(data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch user profile:", err);
+      setError(err.message || 'Не удалось загрузить профиль пользователя');
+      setProfile(null); 
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await userApi.getCurrentUserProfile();
-        setProfile(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProfile();
-  }, []);
+  }, [fetchProfile]);
 
   if (loading) {
     return (
@@ -43,15 +47,15 @@ const UserProfile = ({ authState }) => {
   }
 
   if (!profile) {
-    return null;
+    return null; 
   }
 
   return (
     <Container className="mt-4">
-      {authState.userRole === "DOCTOR" ? ( // Используем authState.userRole
-        <DoctorProfile profile={profile} />
+      {authState.userRole === "DOCTOR" ? (
+        <DoctorProfile profile={profile} refreshProfile={fetchProfile} />
       ) : (
-        <PatientProfile profile={profile} />
+        <PatientProfile profile={profile} refreshProfile={fetchProfile} />
       )}
     </Container>
   );
