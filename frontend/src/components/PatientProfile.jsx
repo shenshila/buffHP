@@ -24,11 +24,15 @@ import {
   FaClipboardCheck,
   FaPaperclip,
   FaDownload,
+  FaPrint
 } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn, MdDateRange } from "react-icons/md";
 import BookAppointmentForm from "./BookAppointmentForm";
 import * as appointmentApi from "../api/appointmentApi";
 import "../css/PatientProfile.css";
+
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const PatientProfile = ({ profile, refreshProfile }) => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -64,6 +68,73 @@ const PatientProfile = ({ profile, refreshProfile }) => {
       } finally {
         setCancellingAppointmentId(null);
       }
+    }
+  };
+
+  const handleDownloadPrintPrescription = async () => {
+    if (!selectedPrescription) return;
+
+    // Создаем элемент, который будем печатать/конвертировать в PDF
+    const printContent = document.createElement('div');
+    printContent.style.padding = '20px';
+    printContent.style.fontFamily = 'Arial, sans-serif';
+    printContent.innerHTML = `
+      <h2 style="color: #dc3545; text-align: center;">Медицинский рецепт</h2>
+      <hr style="border-color: #dc3545;">
+      <p><strong>Пациент:</strong> ${profile.firstName} ${profile.lastName} ${profile.middleName || ''}</p>
+      <p><strong>Дата рождения:</strong> ${formatDate(profile.birthDate).split(',')[0]}</p>
+      <p><strong>Email:</strong> ${profile.email}</p>
+      <p><strong>Телефон:</strong> ${profile.phoneNumber || 'не указан'}</p>
+      <hr>
+      <p><strong>Лекарство:</strong> <span style="font-size: 1.2em; font-weight: bold;">${selectedPrescription.medication}</span></p>
+      <p><strong>Дозировка:</strong> ${selectedPrescription.dosage}</p>
+      <p><strong>Инструкции:</strong> ${selectedPrescription.instructions}</p>
+      <p><strong>Действует до:</strong> ${formatDate(selectedPrescription.expiryDate).split(',')[0]}</p>
+      <hr>
+      <p><strong>Выписан доктором:</strong> ${selectedPrescription.doctor.firstName} ${selectedPrescription.doctor.lastName}</p>
+      <p><strong>Специализация доктора:</strong> ${selectedPrescription.doctor.specialization}</p>
+      <p style="margin-top: 30px; text-align: right; font-style: italic;">Дата выписки: ${formatDate(selectedPrescription.prescriptionDate || new Date()).split(',')[0]}</p>
+    `;
+
+    // Добавляем содержимое на страницу временно для html2canvas
+    document.body.appendChild(printContent);
+
+    try {
+      const canvas = await html2canvas(printContent, { scale: 2 }); // scale: 2 для лучшего качества
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4'); // 'p' - портрет, 'mm' - миллиметры, 'a4' - размер
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`Рецепт_${selectedPrescription.medication}_${profile.lastName}.pdf`);
+      
+      // Можно также предложить распечатать
+      // const printWindow = window.open('', '_blank');
+      // printWindow.document.write('<html><head><title>Рецепт</title></head><body>');
+      // printWindow.document.write(printContent.innerHTML);
+      // printWindow.document.write('</body></html>');
+      // printWindow.document.close();
+      // printWindow.print();
+
+    } catch (error) {
+      console.error('Ошибка при генерации PDF/печати:', error);
+      alert('Не удалось сгенерировать PDF или распечатать рецепт. Пожалуйста, попробуйте еще раз.');
+    } finally {
+      // Удаляем временное содержимое
+      document.body.removeChild(printContent);
     }
   };
 
@@ -618,6 +689,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                     show={showPrescriptionModal}
                     onHide={handleClosePrescription}
                     centered
+                    size="lg"
                   >
                     <Modal.Header closeButton className="border-bottom-0">
                       <Modal.Title>
@@ -710,11 +782,11 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                         Закрыть
                       </Button>
                       <Button
-                        variant="danger"
-                        onClick={handleClosePrescription}
-                      >
-                        Распечатать
-                      </Button>
+                              variant="danger"
+                              onClick={handleDownloadPrintPrescription}
+                            >
+                              <FaDownload className="me-2" /> Скачать / Распечатать
+                            </Button>
                     </Modal.Footer>
                   </Modal>
                 </Card>

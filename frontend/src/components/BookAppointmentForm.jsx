@@ -90,11 +90,11 @@ const BookAppointmentForm = ({ onSuccess }) => {
       setReason("");
       fetchAvailableSlots(selectedDoctorId, selectedDate);
 
-      // Вызываем callback при успешной записи
       if (onSuccess) {
         onSuccess();
       }
     } catch (err) {
+      // Теперь err.message будет содержать сообщение из бэкенда
       setError("Ошибка при записи на прием: " + err.message);
     } finally {
       setLoading(false);
