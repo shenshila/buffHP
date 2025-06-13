@@ -265,7 +265,7 @@ function App() {
                 1
               </p>
               <p>
-                <FaClock className="me-2" /> Пн-Пт: 8:00 - 20:00
+                <FaClock className="me-2" /> Пн-Пт: 8:00 - 18:00
               </p>
             </Col>
             <Col md={4} className="mb-4">
