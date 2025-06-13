@@ -176,7 +176,7 @@ const BookAppointmentForm = ({ onSuccess }) => {
           </Col>
         </Row>
 
-        <Form.Group className="mb-4">
+        {/* <Form.Group className="mb-4">
           <div className="d-flex align-items-center mb-2">
             <FaCommentMedical className="text-danger me-2" />
             <Form.Label className="mb-0 text-secondary">Причина визита</Form.Label>
@@ -190,7 +190,7 @@ const BookAppointmentForm = ({ onSuccess }) => {
             placeholder="Опишите причину вашего визита (не обязательно)"
             className="border-0 border-bottom rounded-0 px-0"
           />
-        </Form.Group>
+        </Form.Group> */}
 
         <Button
           variant="danger"

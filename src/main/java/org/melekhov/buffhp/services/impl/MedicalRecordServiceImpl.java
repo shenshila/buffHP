@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -103,7 +102,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         MedicalRecord existingRecord = medicalRecordRepository.findById(recordId)
                 .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Medical record not found with ID: " + recordId));
 
-        if (!MedicalRecordSource.AI.equals(existingRecord.getSource()) && !MedicalRecordSource.AI_PROPOSED.equals(existingRecord.getSource())) {
+        if (!MedicalRecordSource.ИИ.equals(existingRecord.getSource()) && !MedicalRecordSource.ИИ_ПОДТВЕРЖДЕННЫЙ.equals(existingRecord.getSource())) {
             throw new GlobalExceptionHandler.AppointmentException("Эту запись невозможно подтвердить, так как она не была предложена ИИ.");
         }
         if (existingRecord.getConfirmedByDoctor() != null) {
@@ -113,7 +112,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         Doctor confirmingDoctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Doctor not found with ID: " + doctorId));
 
-        existingRecord.setSource(MedicalRecordSource.AI_PROPOSED);
+        existingRecord.setSource(MedicalRecordSource.ИИ_ПОДТВЕРЖДЕННЫЙ);
         existingRecord.setConfirmedByDoctor(confirmingDoctor);
         existingRecord.setConfirmedDate(LocalDateTime.now());
 

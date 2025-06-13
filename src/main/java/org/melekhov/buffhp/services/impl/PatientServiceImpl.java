@@ -104,7 +104,7 @@ public class PatientServiceImpl implements PatientService {
                     .diagnosis(diagnosis)
                     .treatment(treatment)
                     .symptoms(symptoms)
-                    .source(MedicalRecordSource.AI)
+                    .source(MedicalRecordSource.ИИ)
                     .build();
 
             medicalRecordRepository.saveAndFlush(record);

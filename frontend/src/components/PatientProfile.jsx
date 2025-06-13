@@ -560,7 +560,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                                     : "bg-success text-white"
                                 }`}
                               >
-                                <strong>Рецепт #{presc.id}</strong>
+                                <strong>Рецепт #{presc.id.substring(0, 8)}</strong>
                                 {new Date(presc.expiryDate) < new Date() ? (
                                   <Badge bg="light" text="danger">
                                     Просрочен

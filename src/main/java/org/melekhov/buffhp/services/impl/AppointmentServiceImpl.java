@@ -15,6 +15,7 @@ import org.melekhov.buffhp.services.AppointmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -93,6 +94,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         if (requestDto.getAppointmentDateTime().isBefore(LocalDateTime.now())) {
             throw new GlobalExceptionHandler.AppointmentException("Невозможно записаться на прошедшее время.");
+        }
+
+        DayOfWeek day = requestDto.getAppointmentDateTime().getDayOfWeek();
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+            throw new GlobalExceptionHandler.AppointmentException("Запись возможна только с понедельника по пятницу.");
+        }
+
+        LocalTime time = requestDto.getAppointmentDateTime().toLocalTime();
+        if (time.isBefore(LocalTime.of(9, 0)) || time.isAfter(LocalTime.of(17, 0))) {
+            throw new GlobalExceptionHandler.AppointmentException("Запись возможна только с 09:00 до 17:00.");
         }
 
         boolean isSlotBooked = appointmentRepository.findByDoctorAndAppointmentDateTime(doctor, requestDto.getAppointmentDateTime())
