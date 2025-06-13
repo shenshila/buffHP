@@ -43,7 +43,6 @@ export default function PatientProfile({ authState }) {
   const [currentPrescription, setCurrentPrescription] = useState(null);
   const [verificationResult, setVerificationResult] = useState(null);
 
-  // Состояния для работы с медицинскими записями
   const [confirmationStatus, setConfirmationStatus] = useState(null); 
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [showViewRecordModal, setShowViewRecordModal] = useState(false);
@@ -142,9 +141,9 @@ export default function PatientProfile({ authState }) {
       setRecordForm({
         diagnosis: "",
         treatment: "",
-        symptoms: recordForm.symptoms, // ИЗМЕНЕНО: notes -> symptoms
+        symptoms: recordForm.symptoms,
         recordDate: new Date().toISOString().split("T")[0],
-        source: "Doctor",
+        source: "ДОКТОР",
       });
     } catch (err) {
       setError("Ошибка при создании записи: " + err.message);
@@ -169,7 +168,7 @@ export default function PatientProfile({ authState }) {
           treatment: recordForm.treatment,
           symptoms: recordForm.symptoms,
           recordDate: recordForm.recordDate,
-          source: currentRecord.source || "Doctor",
+          source: currentRecord.source || "ДОКТОР",
         }
       );
 
@@ -241,13 +240,11 @@ export default function PatientProfile({ authState }) {
 
   const handleConfirmRecord = async (recordId) => {
   try {
-    // Изменено: переименована переменная и использована правильная функция API
     const confirmedRecordData = await confirmMedicalRecord(recordId);
 
-    // Обновляем список записей
     const updatedPatient = { ...patient };
     updatedPatient.medicalRecords = patient.medicalRecords.map(record =>
-      record.medicalRecordId === recordId ? confirmedRecordData : record // Изменено: используем confirmedRecordData
+      record.medicalRecordId === recordId ? confirmedRecordData : record
     );
     setPatient(updatedPatient);
 
@@ -467,7 +464,7 @@ export default function PatientProfile({ authState }) {
                                     size="sm"
                                     onClick={() => handleEditRecord(record)}
                                     disabled={
-                                      record.source === "AI" &&
+                                      record.source === "ИИ" &&
                                       !record.confirmedBy
                                     }
                                   >
@@ -632,11 +629,11 @@ export default function PatientProfile({ authState }) {
               <Form.Control
                 as="textarea"
                 rows={2}
-                name="symptoms" // Добавьте name
-                value={recordForm.symptoms} // ИЗМЕНЕНО: notes -> symptoms
+                name="symptoms"
+                value={recordForm.symptoms}
                 onChange={(e) =>
                   setRecordForm({ ...recordForm, symptoms: e.target.value })
-                } // ИЗМЕНЕНО: notes -> symptoms
+                }
               />
             </Form.Group>
           </Form>
@@ -682,8 +679,8 @@ export default function PatientProfile({ authState }) {
 
               <div className="mb-3">
                 <h5>Источник:</h5>
-                <Badge bg={currentRecord.source === "AI" ? "info" : "primary"}>
-                  {currentRecord.source === "AI"
+                <Badge bg={currentRecord.source === "ИИ" ? "info" : "primary"}>
+                  {currentRecord.source === "ИИ"
                     ? "Сгенерировано ИИ"
                     : "Создано врачом"}
                 </Badge>
@@ -719,7 +716,7 @@ export default function PatientProfile({ authState }) {
 
               {/* Добавляем кнопку подтверждения для записей ИИ, если пользователь - врач */}
               {isDoctor &&
-                currentRecord.source === "AI" &&
+                currentRecord.source === "ИИ" &&
                 !currentRecord.confirmedBy && (
                   <div className="mt-4">
                     <Button

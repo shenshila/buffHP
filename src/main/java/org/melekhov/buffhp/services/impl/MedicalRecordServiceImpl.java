@@ -60,7 +60,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
                 .diagnosis(requestDto.getDiagnosis())
                 .treatment(requestDto.getTreatment())
                 .symptoms(requestDto.getSymptoms())
-                .source(MedicalRecordSource.valueOf(requestDto.getSource() != null ? requestDto.getSource() : "Doctor"))
+                .source(MedicalRecordSource.valueOf(requestDto.getSource() != null ? requestDto.getSource() : "ДОКТОР"))
                 .build();
 
         MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medicalRecord);
