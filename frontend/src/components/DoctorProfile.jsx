@@ -363,11 +363,11 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
                               </Card.Body>
                               <Card.Footer className="text-muted">
                                 <small>
-                                  Пациент: {presc.patient.firstName}{" "}
-                                  {presc.patient.lastName}
+                                  Пациент: {presc.patientName.firstName}{" "}
+                                  {presc.patientName.lastName}
                                 </small>
                                 <Link
-                                  to={`/patients/${presc.patient.id}`}
+                                  to={`/patients/${presc.patientName.id}`}
                                   className="ms-2 btn btn-outline-danger btn-sm"
                                 >
                                   Медкарта

@@ -23,7 +23,7 @@ import {
   createMedicalRecord,
   updateMedicalRecord,
   deleteMedicalRecord,
-  confirmMedicalRecord
+  confirmMedicalRecord,
 } from "../api/medicalRecordsApi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/ProfilePage.css";
@@ -43,7 +43,7 @@ export default function PatientProfile({ authState }) {
   const [currentPrescription, setCurrentPrescription] = useState(null);
   const [verificationResult, setVerificationResult] = useState(null);
 
-  const [confirmationStatus, setConfirmationStatus] = useState(null); 
+  const [confirmationStatus, setConfirmationStatus] = useState(null);
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [showViewRecordModal, setShowViewRecordModal] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
@@ -87,7 +87,7 @@ export default function PatientProfile({ authState }) {
 
       const prescriptionWithDoctor = {
         ...response,
-        doctor: response.doctor || {
+        doctor: response.doctorName || {
           lastName: "Вы",
           firstName: "",
           specialization: "",
@@ -239,21 +239,27 @@ export default function PatientProfile({ authState }) {
   };
 
   const handleConfirmRecord = async (recordId) => {
-  try {
-    const confirmedRecordData = await confirmMedicalRecord(recordId);
+    try {
+      const confirmedRecordData = await confirmMedicalRecord(recordId);
 
-    const updatedPatient = { ...patient };
-    updatedPatient.medicalRecords = patient.medicalRecords.map(record =>
-      record.medicalRecordId === recordId ? confirmedRecordData : record
-    );
-    setPatient(updatedPatient);
+      const updatedPatient = { ...patient };
+      updatedPatient.medicalRecords = patient.medicalRecords.map((record) =>
+        record.medicalRecordId === recordId ? confirmedRecordData : record
+      );
+      setPatient(updatedPatient);
 
-    setConfirmationStatus({ success: true, message: 'Запись успешно подтверждена' });
-    setTimeout(() => setConfirmationStatus(null), 3000);
-  } catch (err) {
-    setConfirmationStatus({ success: false, message: 'Ошибка подтверждения: ' + err.message });
-  }
-};
+      setConfirmationStatus({
+        success: true,
+        message: "Запись успешно подтверждена",
+      });
+      setTimeout(() => setConfirmationStatus(null), 3000);
+    } catch (err) {
+      setConfirmationStatus({
+        success: false,
+        message: "Ошибка подтверждения: " + err.message,
+      });
+    }
+  };
 
   if (loading)
     return (
@@ -535,8 +541,8 @@ export default function PatientProfile({ authState }) {
                           <td className="fw-bold">{prescription.medication}</td>
                           <td>{prescription.dosage}</td>
                           <td>
-                            {prescription.doctor.lastName}{" "}
-                            {prescription.doctor.firstName}
+                            {prescription.doctorName?.lastName}{" "}
+                            {prescription.doctorName?.firstName}
                           </td>
                           <td
                             className={
@@ -871,8 +877,8 @@ export default function PatientProfile({ authState }) {
                 <Col md={6}>
                   <h5>Врач:</h5>
                   <p>
-                    {currentPrescription.doctor.lastName}{" "}
-                    {currentPrescription.doctor.firstName}
+                    {currentPrescription.doctorName?.lastName}{" "}
+                    {currentPrescription.doctorName?.firstName}
                   </p>
                 </Col>
               </Row>
@@ -922,6 +928,18 @@ export default function PatientProfile({ authState }) {
                       <p className="text-muted mt-2">
                         Отсканируйте QR-код для проверки рецепта
                       </p>
+                      {currentPrescription.verificationUrl && (
+                        <p className="mt-2">
+                          <a
+                            href={`${window.location.origin}/verify/${currentPrescription.qrCode}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-outline-info"
+                          >
+                            Проверить рецепт по ссылке
+                          </a>
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

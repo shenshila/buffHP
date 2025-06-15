@@ -17,7 +17,7 @@ public class UserProfileDto {
     private String email;
 
     private List<AppointmentDto> appointments;
-    private List<PrescriptionDto> prescriptions;
+    private List<PrescriptionResponseDto> prescriptions;
 
     // Для доктора
     private String specialization;

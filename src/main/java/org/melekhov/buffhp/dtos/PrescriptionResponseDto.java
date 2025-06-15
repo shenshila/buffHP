@@ -17,6 +17,7 @@ public class PrescriptionResponseDto {
     private String medication;
     private String dosage;
     private String instructions;
-    private String qrCodeBase64; // QR-код в base64
+    private String verificationCode;
     private String verificationUrl; // URL для проверки
+    private String qrCodeBase64; // QR-код в base64
 }

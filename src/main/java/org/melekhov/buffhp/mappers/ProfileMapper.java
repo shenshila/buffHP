@@ -14,7 +14,7 @@ public class ProfileMapper {
     public UserProfileDto toDto(Patient patient,
                                 List<AppointmentDto> appointments,
                                 List<MedicalRecordDto> medicalRecords,
-                                List<PrescriptionDto> prescriptions) {
+                                List<PrescriptionResponseDto> prescriptions) {
 
         return UserProfileDto.builder()
                 .id(patient.getPatientId())
@@ -35,7 +35,7 @@ public class ProfileMapper {
 
     public UserProfileDto toDto(Doctor doctor,
                                 List<AppointmentDto> appointments,
-                                List<PrescriptionDto> prescriptions) {
+                                List<PrescriptionResponseDto> prescriptions) {
         return UserProfileDto.builder()
                 .id(doctor.getDoctorId())
                 .firstName(doctor.getFirstName())

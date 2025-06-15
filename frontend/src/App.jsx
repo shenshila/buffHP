@@ -36,6 +36,7 @@ import ChatPage from "./pages/ChatPage";
 import UserProfile from "./pages/UserProfilePage";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import BookAppointmentForm from './components/BookAppointmentForm';
+import PrescriptionVerifyPage from './pages/PrescriptionVerifyPage';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -237,6 +238,7 @@ function App() {
           />
           <Route path="/doctor/analytics" element={<AnalyticsDashboard authState={authState}/>} />
           <Route path="/patient/book-appointment" element={<BookAppointmentForm authState={authState}/>} />
+          <Route path="/verify/:code" element={<PrescriptionVerifyPage />} />
         </Routes>
       </Container>
 

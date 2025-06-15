@@ -29,6 +29,14 @@ public class PrescriptionMapper {
     }
 
     public PrescriptionResponseDto mapToResponse(Prescription prescription) {
+        if (prescription == null) {
+            return null;
+        }
+
+        String qrCodeBase64String = null;
+        if (prescription.getQrCode() != null && prescription.getQrCode().length > 0) {
+            qrCodeBase64String = Base64.getEncoder().encodeToString(prescription.getQrCode());
+        }
 
         return PrescriptionResponseDto.builder()
                 .id(prescription.getPrescriptionId())
@@ -39,8 +47,9 @@ public class PrescriptionMapper {
                 .medication(prescription.getMedication())
                 .dosage(prescription.getDosage())
                 .instructions(prescription.getInstructions())
-                .qrCodeBase64(Base64.getEncoder().encodeToString(prescription.getQrCode()))
+                .verificationCode(prescription.getVerificationCode())
                 .verificationUrl("http://localhost:8080/api/prescriptions/verify/" + prescription.getVerificationCode())
+                .qrCodeBase64(qrCodeBase64String)
                 .build();
     }
 }

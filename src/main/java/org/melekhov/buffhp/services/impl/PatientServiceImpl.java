@@ -83,9 +83,9 @@ public class PatientServiceImpl implements PatientService {
                 .map(medicalRecordMapper::toMedicalRecordDto)
                 .toList();
 
-        List<PrescriptionDto> prescriptionDtoList = prescriptionRepository.findByPatientId(id)
+        List<PrescriptionResponseDto> prescriptionDtoList = prescriptionRepository.findByPatientId(id)
                 .stream()
-                .map(prescriptionMapper::toDto)
+                .map(prescriptionMapper::mapToResponse)
                 .toList();
 
         return profileMapper.toDto(patient, appointmentDtoList, medicalRecordDtoList, prescriptionDtoList);

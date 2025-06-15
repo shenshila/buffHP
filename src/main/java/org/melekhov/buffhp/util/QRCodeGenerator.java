@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 @Service
 public class QRCodeGenerator {
@@ -23,5 +24,10 @@ public class QRCodeGenerator {
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate QR Code", e);
         }
+    }
+
+    public String generateQRCodeBase64(String text) { // Новая функция
+        byte[] qrCode = generateQRCode(text);
+        return Base64.getEncoder().encodeToString(qrCode);
     }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.melekhov.buffhp.dtos.AppointmentDto;
 import org.melekhov.buffhp.dtos.MedicalRecordDto;
 import org.melekhov.buffhp.dtos.PrescriptionDto;
+import org.melekhov.buffhp.dtos.PrescriptionResponseDto;
 import org.melekhov.buffhp.entities.Doctor;
 import org.melekhov.buffhp.entities.Patient;
 import org.melekhov.buffhp.entities.User;
@@ -54,9 +55,9 @@ public class UserServiceImpl implements UserService {
                     .map(medicalRecordMapper::toMedicalRecordDto)
                     .toList();
 
-            List<PrescriptionDto> prescriptionDtoList = prescriptionRepository.findByPatientId(patient.getPatientId())
+            List<PrescriptionResponseDto> prescriptionDtoList = prescriptionRepository.findByPatientId(patient.getPatientId())
                     .stream()
-                    .map(prescriptionMapper::toDto)
+                    .map(prescriptionMapper::mapToResponse)
                     .toList();
 
             return profileMapper.toDto(patient, appointmentDtoList, medicalRecordDtoList, prescriptionDtoList);
@@ -69,9 +70,9 @@ public class UserServiceImpl implements UserService {
                     .map(appointmentMapper::toDto)
                     .toList();
 
-            List<PrescriptionDto> prescriptionDtoList = prescriptionRepository.findByDoctorId(doctor.getDoctorId())
+            List<PrescriptionResponseDto> prescriptionDtoList = prescriptionRepository.findByDoctorId(doctor.getDoctorId())
                     .stream()
-                    .map(prescriptionMapper::toDto)
+                    .map(prescriptionMapper::mapToResponse)
                     .toList();
 
             return profileMapper.toDto(doctor, appointmentDtoList, prescriptionDtoList);

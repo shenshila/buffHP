@@ -24,23 +24,23 @@ import {
   FaClipboardCheck,
   FaPaperclip,
   FaDownload,
-  FaPrint
+  FaPrint,
 } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn, MdDateRange } from "react-icons/md";
 import BookAppointmentForm from "./BookAppointmentForm";
 import * as appointmentApi from "../api/appointmentApi";
 import "../css/PatientProfile.css";
 
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const PatientProfile = ({ profile, refreshProfile }) => {
   const [activeTab, setActiveTab] = useState("profile");
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
-  const [cancelError, setCancelError] = useState(null); 
-  const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null); 
+  const [cancelError, setCancelError] = useState(null);
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null);
 
   const handleShowPrescription = (prescription) => {
     setSelectedPrescription(prescription);
@@ -58,9 +58,9 @@ const PatientProfile = ({ profile, refreshProfile }) => {
       setCancelError(null);
       try {
         await appointmentApi.cancelAppointment(appointmentId);
-        // alert("Прием успешно отменен!"); 
-        if (refreshProfile) { 
-          await refreshProfile(); 
+        // alert("Прием успешно отменен!");
+        if (refreshProfile) {
+          await refreshProfile();
         }
       } catch (err) {
         console.error("Ошибка при отмене приема:", err);
@@ -75,25 +75,41 @@ const PatientProfile = ({ profile, refreshProfile }) => {
     if (!selectedPrescription) return;
 
     // Создаем элемент, который будем печатать/конвертировать в PDF
-    const printContent = document.createElement('div');
-    printContent.style.padding = '20px';
-    printContent.style.fontFamily = 'Arial, sans-serif';
+    const printContent = document.createElement("div");
+    printContent.style.padding = "20px";
+    printContent.style.fontFamily = "Arial, sans-serif";
     printContent.innerHTML = `
       <h2 style="color: #dc3545; text-align: center;">Медицинский рецепт</h2>
       <hr style="border-color: #dc3545;">
-      <p><strong>Пациент:</strong> ${profile.firstName} ${profile.lastName} ${profile.middleName || ''}</p>
-      <p><strong>Дата рождения:</strong> ${formatDate(profile.birthDate).split(',')[0]}</p>
+      <p><strong>Пациент:</strong> ${profile.firstName} ${profile.lastName} ${
+      profile.middleName || ""
+    }</p>
+      <p><strong>Дата рождения:</strong> ${
+        formatDate(profile.birthDate).split(",")[0]
+      }</p>
       <p><strong>Email:</strong> ${profile.email}</p>
-      <p><strong>Телефон:</strong> ${profile.phoneNumber || 'не указан'}</p>
+      <p><strong>Телефон:</strong> ${profile.phoneNumber || "не указан"}</p>
       <hr>
-      <p><strong>Лекарство:</strong> <span style="font-size: 1.2em; font-weight: bold;">${selectedPrescription.medication}</span></p>
+      <p><strong>Лекарство:</strong> <span style="font-size: 1.2em; font-weight: bold;">${
+        selectedPrescription.medication
+      }</span></p>
       <p><strong>Дозировка:</strong> ${selectedPrescription.dosage}</p>
       <p><strong>Инструкции:</strong> ${selectedPrescription.instructions}</p>
-      <p><strong>Действует до:</strong> ${formatDate(selectedPrescription.expiryDate).split(',')[0]}</p>
+      <p><strong>Действует до:</strong> ${
+        formatDate(selectedPrescription.expiryDate).split(",")[0]
+      }</p>
       <hr>
-      <p><strong>Выписан доктором:</strong> ${selectedPrescription.doctor.firstName} ${selectedPrescription.doctor.lastName}</p>
-      <p><strong>Специализация доктора:</strong> ${selectedPrescription.doctor.specialization}</p>
-      <p style="margin-top: 30px; text-align: right; font-style: italic;">Дата выписки: ${formatDate(selectedPrescription.prescriptionDate || new Date()).split(',')[0]}</p>
+      <p><strong>Выписан доктором:</strong> ${
+        selectedPrescription.doctorName.firstName
+      } ${selectedPrescription.doctorName.lastName}</p>
+      <p><strong>Специализация доктора:</strong> ${
+        selectedPrescription.doctorName.specialization
+      }</p>
+      <p style="margin-top: 30px; text-align: right; font-style: italic;">Дата выписки: ${
+        formatDate(selectedPrescription.prescriptionDate || new Date()).split(
+          ","
+        )[0]
+      }</p>
     `;
 
     // Добавляем содержимое на страницу временно для html2canvas
@@ -101,26 +117,28 @@ const PatientProfile = ({ profile, refreshProfile }) => {
 
     try {
       const canvas = await html2canvas(printContent, { scale: 2 }); // scale: 2 для лучшего качества
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4'); // 'p' - портрет, 'mm' - миллиметры, 'a4' - размер
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4"); // 'p' - портрет, 'mm' - миллиметры, 'a4' - размер
       const imgWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm
-      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
 
-      pdf.save(`Рецепт_${selectedPrescription.medication}_${profile.lastName}.pdf`);
-      
+      pdf.save(
+        `Рецепт_${selectedPrescription.medication}_${profile.lastName}.pdf`
+      );
+
       // Можно также предложить распечатать
       // const printWindow = window.open('', '_blank');
       // printWindow.document.write('<html><head><title>Рецепт</title></head><body>');
@@ -128,10 +146,11 @@ const PatientProfile = ({ profile, refreshProfile }) => {
       // printWindow.document.write('</body></html>');
       // printWindow.document.close();
       // printWindow.print();
-
     } catch (error) {
-      console.error('Ошибка при генерации PDF/печати:', error);
-      alert('Не удалось сгенерировать PDF или распечатать рецепт. Пожалуйста, попробуйте еще раз.');
+      console.error("Ошибка при генерации PDF/печати:", error);
+      alert(
+        "Не удалось сгенерировать PDF или распечатать рецепт. Пожалуйста, попробуйте еще раз."
+      );
     } finally {
       // Удаляем временное содержимое
       document.body.removeChild(printContent);
@@ -144,7 +163,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
       month: "long",
       day: "numeric",
       hour: "2-digit",
-      minute: "2-digit", 
+      minute: "2-digit",
     });
 
   const fadeIn = {
@@ -398,7 +417,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                         {[...profile.appointments]
                           .sort(
                             (a, b) =>
-                              new Date(b.appointmentDate) - 
+                              new Date(b.appointmentDate) -
                               new Date(a.appointmentDate)
                           )
                           .map((app) => (
@@ -453,11 +472,15 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                                     </Badge>
                                     Специализация: {app.doctor.specialization}
                                   </p>
-                                  {(
-                                      <Button variant="outline-secondary" size="sm" className="mt-2 me-2">
-                                          Подробнее
-                                      </Button>
-                                  )}
+                                  {
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      className="mt-2 me-2"
+                                    >
+                                      Подробнее
+                                    </Button>
+                                  }
                                   {/* Кнопка отмены приема */}
                                   {app.appointmentStatus === "SCHEDULED" && (
                                     <Button
@@ -631,7 +654,9 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                                     : "bg-success text-white"
                                 }`}
                               >
-                                <strong>Рецепт #{presc.id.substring(0, 8)}</strong>
+                                <strong>
+                                  Рецепт #{presc.id.substring(0, 8)}
+                                </strong>
                                 {new Date(presc.expiryDate) < new Date() ? (
                                   <Badge bg="light" text="danger">
                                     Просрочен
@@ -671,8 +696,8 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                               </Card.Body>
                               <Card.Footer className="text-muted">
                                 <small>
-                                  Врач: {presc.doctor.firstName}{" "}
-                                  {presc.doctor.lastName}
+                                  Врач: {presc.doctorName.firstName}{" "}
+                                  {presc.doctorName.lastName}
                                 </small>
                               </Card.Footer>
                             </Card>
@@ -694,7 +719,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                     <Modal.Header closeButton className="border-bottom-0">
                       <Modal.Title>
                         <FaPrescription className="me-2 text-danger" />
-                        Рецепт #{selectedPrescription?.id}
+                        Рецепт #{selectedPrescription?.id.substring(0, 8)}
                       </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -742,11 +767,35 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                             <ListGroup.Item className="d-flex justify-content-between">
                               <span className="text-muted">Врач:</span>
                               <span className="fw-bold">
-                                {selectedPrescription.doctor.firstName}{" "}
-                                {selectedPrescription.doctor.lastName}
+                                {selectedPrescription.doctorName.firstName}{" "}
+                                {selectedPrescription.doctorName.lastName}
                               </span>
                             </ListGroup.Item>
                           </ListGroup>
+
+                          {selectedPrescription.qrCodeBase64 && (
+                            <div className="text-center my-4">
+                              <h6 className="mb-3">QR-код для верификации:</h6>
+                              <img
+                                src={`data:image/png;base64,${selectedPrescription.qrCodeBase64}`}
+                                alt="QR Code"
+                                style={{
+                                  maxWidth: "200px",
+                                  height: "auto",
+                                  border: "1px solid #ddd",
+                                  padding: "5px",
+                                }}
+                                className="img-fluid rounded" 
+                              />
+                              {selectedPrescription.verificationUrl && (
+                                <p className="mt-2 text-muted">
+                                  <small>
+                                    Сканируйте для проверки подлинности
+                                  </small>
+                                </p>
+                              )}
+                            </div>
+                          )}
 
                           <h6 className="mb-2">Инструкции по применению:</h6>
                           <Card className="mb-3">
@@ -782,11 +831,11 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                         Закрыть
                       </Button>
                       <Button
-                              variant="danger"
-                              onClick={handleDownloadPrintPrescription}
-                            >
-                              <FaDownload className="me-2" /> Скачать / Распечатать
-                            </Button>
+                        variant="danger"
+                        onClick={handleDownloadPrintPrescription}
+                      >
+                        <FaDownload className="me-2" /> Скачать / Распечатать
+                      </Button>
                     </Modal.Footer>
                   </Modal>
                 </Card>
