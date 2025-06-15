@@ -28,6 +28,7 @@ import {
 } from "react-icons/fa";
 import { MdEmail, MdPhone, MdLocationOn, MdDateRange } from "react-icons/md";
 import BookAppointmentForm from "./BookAppointmentForm";
+import FeatureUnavailableModal from "./FeatureUnavailableModal";
 import * as appointmentApi from "../api/appointmentApi";
 import "../css/PatientProfile.css";
 
@@ -41,6 +42,8 @@ const PatientProfile = ({ profile, refreshProfile }) => {
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [cancelError, setCancelError] = useState(null);
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState(null);
+  const [showFeatureUnavailableModal, setShowFeatureUnavailableModal] = useState(false);
+  const [unavailableFeatureName, setUnavailableFeatureName] = useState('');
 
   const handleShowPrescription = (prescription) => {
     setSelectedPrescription(prescription);
@@ -51,6 +54,16 @@ const PatientProfile = ({ profile, refreshProfile }) => {
     setShowPrescriptionModal(false);
     setSelectedPrescription(null);
   };
+
+  const handleShowFeatureUnavailable = (featureName) => {
+  setUnavailableFeatureName(featureName);
+  setShowFeatureUnavailableModal(true);
+};
+
+const handleCloseFeatureUnavailable = () => {
+  setShowFeatureUnavailableModal(false);
+  setUnavailableFeatureName('');
+};
 
   const handleCancelAppointment = async (appointmentId) => {
     if (window.confirm("Вы уверены, что хотите отменить этот прием?")) {
@@ -240,7 +253,12 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                 >
                   <FaEdit className="me-2" /> Записаться на прием
                 </Button>
-                <Button variant="outline-secondary" className="w-100">
+                <Button
+                  variant="outline-secondary"
+                  className="w-100"
+                  // -   onClick={() => console.log("История посещений")} 
+                  onClick={() => handleShowFeatureUnavailable('История посещений')} 
+                  >
                   <FaHistory className="me-2" /> История посещений
                 </Button>
               </Card.Body>
@@ -477,6 +495,7 @@ const PatientProfile = ({ profile, refreshProfile }) => {
                                       variant="outline-secondary"
                                       size="sm"
                                       className="mt-2 me-2"
+                                      onClick={() => handleShowFeatureUnavailable('Детали приема')}
                                     >
                                       Подробнее
                                     </Button>
@@ -865,6 +884,11 @@ const PatientProfile = ({ profile, refreshProfile }) => {
           />
         </Modal.Body>
       </Modal>
+      <FeatureUnavailableModal
+    show={showFeatureUnavailableModal}
+    handleClose={handleCloseFeatureUnavailable}
+    featureName={unavailableFeatureName}
+  />
     </motion.div>
   );
 };

@@ -268,7 +268,7 @@ export default function RegisterForm() {
         variant="danger"
         type="submit"
         className="w-100 mt-3"
-        disabled={loading || (formData.password !== formData.confirmPassword)} // Деактивируем кнопку, если пароли не совпадают
+        disabled={loading || (formData.password !== formData.confirmPassword)}
       >
         {loading ? 'Регистрация...' : 'Зарегистрироваться'}
       </Button>
