@@ -45,7 +45,11 @@ const DiseaseTrendsChart = ({ data }) => {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
+                <Legend
+                    verticalAlign="top"
+                    align="center"
+                    wrapperStyle={{ paddingTop: '10px', paddingBottom: '10px' }} // Добавляем отступы
+                />
                 {diagnoses.map((diagnosis, index) => (
                     <Line
                         key={diagnosis}

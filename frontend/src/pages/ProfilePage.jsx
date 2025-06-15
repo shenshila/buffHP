@@ -25,6 +25,7 @@ import {
   deleteMedicalRecord,
   confirmMedicalRecord,
 } from "../api/medicalRecordsApi";
+import FeatureUnavailableModal from "../components/FeatureUnavailableModal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/ProfilePage.css";
 
@@ -43,6 +44,9 @@ export default function PatientProfile({ authState }) {
   const [currentPrescription, setCurrentPrescription] = useState(null);
   const [verificationResult, setVerificationResult] = useState(null);
 
+  const [showFeatureUnavailableModal, setShowFeatureUnavailableModal] = useState(false);
+  const [unavailableFeatureName, setUnavailableFeatureName] = useState('');
+
   const [confirmationStatus, setConfirmationStatus] = useState(null);
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [showViewRecordModal, setShowViewRecordModal] = useState(false);
@@ -60,6 +64,16 @@ export default function PatientProfile({ authState }) {
     instructions: "",
     validityDays: 30,
   });
+
+  const handleShowFeatureUnavailable = (featureName) => {
+  setUnavailableFeatureName(featureName);
+  setShowFeatureUnavailableModal(true);
+};
+
+const handleCloseFeatureUnavailable = () => {
+  setShowFeatureUnavailableModal(false);
+  setUnavailableFeatureName('');
+};
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -389,7 +403,10 @@ export default function PatientProfile({ authState }) {
                             </Badge>
                           </td>
                           <td>
-                            <Button variant="outline-danger" size="sm">
+                            <Button variant="outline-danger" 
+                            size="sm"
+                            onClick={() => handleShowFeatureUnavailable('Подробнее')}
+                            >
                               Подробнее
                             </Button>
                           </td>
@@ -954,9 +971,16 @@ export default function PatientProfile({ authState }) {
         </Modal.Footer>
       </Modal>
 
+      <FeatureUnavailableModal
+          show={showFeatureUnavailableModal}
+          handleClose={handleCloseFeatureUnavailable}
+          featureName={unavailableFeatureName}
+        />
+
       {/* Кнопки действий */}
       <div className="d-flex justify-content-end gap-3 mt-4">
-        <Button variant="outline-danger">
+        <Button variant="outline-danger"
+        onClick={() => handleShowFeatureUnavailable('Записать на прием')}>
           <i className="bi bi-calendar-plus me-2"></i>
           Записать на прием
         </Button>

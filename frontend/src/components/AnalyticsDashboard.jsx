@@ -1,4 +1,3 @@
-// src/components/AnalyticsDashboard.js
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import {
@@ -8,7 +7,7 @@ import {
     fetchAgeDistribution,
     fetchDoctorAppointmentsActivity,
     fetchDoctorPrescriptionsActivity,
-} from '../api/analyticsApi'; // Проверь путь к файлу API
+} from '../api/analyticsApi'; 
 import DiseaseTrendsChart from './charts/DiseaseTrendsChart';
 import DiagnosisDistributionChart from './charts/DiagnosisDistributionChart';
 // import GenderDistributionChart from './charts/GenderDistributionChart';
@@ -16,8 +15,8 @@ import DiagnosisDistributionChart from './charts/DiagnosisDistributionChart';
 // import DoctorActivityChart from './charts/DoctorActivityChart';
 
 const AnalyticsDashboard = () => {
-    const [startDate, setStartDate] = useState('2023-01-01'); // Начальная дата по умолчанию
-    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]); // Сегодняшняя дата
+    const [startDate, setStartDate] = useState('2023-01-01'); 
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]); 
     const [diseaseTrendsData, setDiseaseTrendsData] = useState([]);
     const [topDiagnosesData, setTopDiagnosesData] = useState([]);
     const [genderDistributionData, setGenderDistributionData] = useState([]);
@@ -117,8 +116,8 @@ const AnalyticsDashboard = () => {
                 </Col>
             </Row>
 
-            <Row>
-                <Col lg={6} className="mb-4">
+            <Row className="mb-4">
+                <Col md={12}>
                     <Card>
                         <Card.Body>
                             <Card.Title>Динамика Заболеваемости</Card.Title>
@@ -126,43 +125,14 @@ const AnalyticsDashboard = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col lg={6} className="mb-4">
+            </Row>
+
+            <Row className="mb-4">
+                <Col md={12}>
                     <Card>
                         <Card.Body>
                             <Card.Title>Топ Диагнозов</Card.Title>
                             <DiagnosisDistributionChart data={topDiagnosesData} />
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col lg={6} className="mb-4">
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>Распределение по Полу</Card.Title>
-                            {/* <GenderDistributionChart data={genderDistributionData} /> */}
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col lg={6} className="mb-4">
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>Возрастное Распределение</Card.Title>
-                            {/* <AgeDistributionChart data={ageDistributionData} /> */}
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col lg={6} className="mb-4">
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>Активность Докторов (Приемы)</Card.Title>
-                            {/* <DoctorActivityChart data={doctorAppointmentsData} type="appointments" /> */}
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col lg={6} className="mb-4">
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>Активность Докторов (Рецепты)</Card.Title>
-                            {/* <DoctorActivityChart data={doctorPrescriptionsData} type="prescriptions" /> */}
                         </Card.Body>
                     </Card>
                 </Col>
@@ -172,3 +142,37 @@ const AnalyticsDashboard = () => {
 };
 
 export default AnalyticsDashboard;
+
+
+// <Col lg={6} className="mb-4">
+//                     <Card>
+//                         <Card.Body>
+//                             <Card.Title>Распределение по Полу</Card.Title>
+//                             {/* <GenderDistributionChart data={genderDistributionData} /> */}
+//                         </Card.Body>
+//                     </Card>
+//                 </Col>
+//                 <Col lg={6} className="mb-4">
+//                     <Card>
+//                         <Card.Body>
+//                             <Card.Title>Возрастное Распределение</Card.Title>
+//                             {/* <AgeDistributionChart data={ageDistributionData} /> */}
+//                         </Card.Body>
+//                     </Card>
+//                 </Col>
+//                 <Col lg={6} className="mb-4">
+//                     <Card>
+//                         <Card.Body>
+//                             <Card.Title>Активность Докторов (Приемы)</Card.Title>
+//                             {/* <DoctorActivityChart data={doctorAppointmentsData} type="appointments" /> */}
+//                         </Card.Body>
+//                     </Card>
+//                 </Col>
+//                 <Col lg={6} className="mb-4">
+//                     <Card>
+//                         <Card.Body>
+//                             <Card.Title>Активность Докторов (Рецепты)</Card.Title>
+//                             {/* <DoctorActivityChart data={doctorPrescriptionsData} type="prescriptions" /> */}
+//                         </Card.Body>
+//                     </Card>
+//                 </Col>

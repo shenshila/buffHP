@@ -381,7 +381,7 @@ const handleCloseFeatureUnavailable = () => {
                           </Col>
                         </Row>
                       </ListGroup.Item>
-                      <ListGroup.Item>
+                      {/* <ListGroup.Item>
                         <Row>
                           <Col sm={4} className="text-muted">
                             Страховая компания:
@@ -402,7 +402,7 @@ const handleCloseFeatureUnavailable = () => {
                               : "не указано"}
                           </Col>
                         </Row>
-                      </ListGroup.Item>
+                      </ListGroup.Item> */}
                     </ListGroup>
                   </Card.Body>
                 </Card>
