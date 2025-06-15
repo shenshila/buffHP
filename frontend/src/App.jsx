@@ -26,6 +26,7 @@ import {
   FaNotesMedical,
   FaFilePrescription,
   FaSearch,
+  FaUserShield,
 } from "react-icons/fa";
 import HomePage from "./pages/HomePage";
 import PatientsPage from "./pages/PatientsPage";
@@ -37,31 +38,50 @@ import UserProfile from "./pages/UserProfilePage";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import BookAppointmentForm from './components/BookAppointmentForm';
 import PrescriptionVerifyPage from './pages/PrescriptionVerifyPage';
+import AdminDashboard from './components/AdminDashboard'; 
+import ProtectedRoute from './components/ProtectedRoute';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 const getRoleFromToken = (decoded) => {
-  // Проверяем разные варианты хранения ролей
-  if (decoded.roles && decoded.roles.length > 0) {
-    return decoded.roles[0].replace("ROLE_", "");
-  }
-  if (decoded.authorities && decoded.authorities.length > 0) {
-    return decoded.authorities[0].replace("ROLE_", "");
-  }
-  if (decoded.role) {
-    return decoded.role.replace("ROLE_", "");
-  }
-  return null;
+    // Проверяем разные варианты хранения ролей
+    if (decoded.roles && decoded.roles.length > 0) {
+        // Предполагаем, что роли приходят в формате ["ROLE_ADMIN", "ROLE_DOCTOR"]
+        // Если пользователь имеет несколько ролей, возьмем первую для userRole, но учтем все для ProtectedRoute
+        return decoded.roles[0].replace("ROLE_", ""); // Например, вернет "ADMIN" или "DOCTOR"
+    }
+    if (decoded.authorities && decoded.authorities.length > 0) {
+        return decoded.authorities[0].replace("ROLE_", "");
+    }
+    if (decoded.role) {
+        return decoded.role.replace("ROLE_", "");
+    }
+    return null;
+};
+
+const getAllRolesFromToken = (decoded) => {
+    const roles = new Set();
+    if (decoded.roles && Array.isArray(decoded.roles)) {
+        decoded.roles.forEach(role => roles.add(role.replace("ROLE_", "")));
+    }
+    if (decoded.authorities && Array.isArray(decoded.authorities)) {
+        decoded.authorities.forEach(role => roles.add(role.replace("ROLE_", "")));
+    }
+    if (decoded.role) {
+        roles.add(decoded.role.replace("ROLE_", ""));
+    }
+    return Array.from(roles);
 };
 
 function App() {
   const [authState, setAuthState] = useState({
-    isAuthenticated: false,
-    userRole: null,
-    userFullName: null,
-    isLoading: true,
-  });
-  const [isDoctor, setIsDoctor] = useState(false);
+        isAuthenticated: false,
+        userRole: null, // Основная роль (например, первая в списке)
+        userRoles: [], // Все роли пользователя
+        userFullName: null,
+        isLoading: true,
+    });
+  // const [isDoctor, setIsDoctor] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,71 +93,82 @@ function App() {
         try {
           decoded = jwtDecode(token);
           console.log("Decoded token:", decoded); // Для отладки
-          const role = getRoleFromToken(decoded);
+          // const role = getRoleFromToken(decoded);
+          const mainRole = getRoleFromToken(decoded);
+          const allRoles = getAllRolesFromToken(decoded);
 
           setAuthState({
-            isAuthenticated: true,
-            userRole: role,
-            userFullName: decoded.fullName || "",
-            isLoading: false,
-          });
+                        isAuthenticated: true,
+                        userRole: mainRole,
+                        userRoles: allRoles, // Устанавливаем все роли
+                        userFullName: decoded.fullName || "",
+                        isLoading: false,
+                    });
 
-          const isDoctorFromToken = decoded.roles?.includes("ROLE_DOCTOR");
-          setIsDoctor(isDoctorFromToken);
+          // const isDoctorFromToken = decoded.roles?.includes("ROLE_DOCTOR");
+          // setIsDoctor(isDoctorFromToken);
         } catch (err) {
           console.error("Token decode error:", err);
-          localStorage.removeItem("token");
-          setAuthState({
-            isAuthenticated: false,
-            userRole: null,
-            isLoading: false,
-          });
-          setIsDoctor(false);
+                    localStorage.removeItem("token");
+                    setAuthState({
+                        isAuthenticated: false,
+                        userRole: null,
+                        userRoles: [],
+                        isLoading: false,
+                    });
+          // console.error("Token decode error:", err);
+          // localStorage.removeItem("token");
+          // setAuthState({
+          //   isAuthenticated: false,
+          //   userRole: null,
+          //   isLoading: false,
+          // });
+          // setIsDoctor(false);
         }
       } else {
         setAuthState((prev) => ({ ...prev, isLoading: false }));
-        setIsDoctor(false);
+        // setAuthState((prev) => ({ ...prev, isLoading: false }));
+        // setIsDoctor(false);
       }
     };
     checkAuth();
   }, []);
 
   const handleLogin = (token) => {
-    localStorage.setItem("token", token);
-    const decoded = jwtDecode(token);
-    console.log("Decoded token on login:", decoded);
-    const role = getRoleFromToken(decoded);
+        localStorage.setItem("token", token);
+        const decoded = jwtDecode(token);
+        console.log("Decoded token on login:", decoded);
+        const mainRole = getRoleFromToken(decoded);
+        const allRoles = getAllRolesFromToken(decoded);
 
-    console.log("Role after extraction:", role); // Добавьте эту строку
-
-    const isDoctor = decoded.roles?.includes("ROLE_DOCTOR");
-    setIsDoctor(isDoctor);
-
-    setAuthState({
-      isAuthenticated: true,
-      userRole: role,
-      userFullName: decoded.fullName || "",
-      isLoading: false,
-    });
-    navigate("/");
-  };
+        setAuthState({
+            isAuthenticated: true,
+            userRole: mainRole,
+            userRoles: allRoles,
+            userFullName: decoded.fullName || "",
+            isLoading: false,
+        });
+        navigate("/");
+    };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setAuthState({
-      isAuthenticated: false,
-      userRole: null,
-      isLoading: false,
-    });
-    navigate("/");
-  };
+        localStorage.removeItem("token");
+        setAuthState({
+            isAuthenticated: false,
+            userRole: null,
+            userRoles: [],
+            userFullName: null,
+            isLoading: false,
+        });
+        navigate("/");
+    };
 
   console.log("AuthState in ProfilePage:", authState);
   console.log("User role:", authState?.userRole);
-  console.log(
-    "Is doctor:",
-    authState?.userRole === "DOCTOR" || authState?.userRole === "ROLE_DOCTOR"
-  );
+  // console.log(
+  //   "Is doctor:",
+  //   authState?.userRole === "DOCTOR" || authState?.userRole === "ROLE_DOCTOR"
+  // );
 
   if (authState.isLoading) {
     return (
@@ -178,6 +209,12 @@ function App() {
                     <FaNotesMedical className="me-1" /> Медпомощь
                   </Nav.Link>
                 )}
+                {authState.isAuthenticated &&
+                                authState.userRoles.includes("ADMIN") && ( // Ссылка для админа
+                                    <Nav.Link as={Link} to="/admin" className="fw-medium mx-2">
+                                        <FaUserShield className="me-1" /> Админ
+                                    </Nav.Link>
+                                )}
               <Nav.Link as={Link} to="/about" className="fw-medium mx-2">
                 <FaClinicMedical className="me-1" /> О клинике
               </Nav.Link>
@@ -239,6 +276,11 @@ function App() {
           <Route path="/doctor/analytics" element={<AnalyticsDashboard authState={authState}/>} />
           <Route path="/patient/book-appointment" element={<BookAppointmentForm authState={authState}/>} />
           <Route path="/verify/:code" element={<PrescriptionVerifyPage />} />
+          <Route path="/admin" element={
+                        <ProtectedRoute authState={authState} allowedRoles={["ROLE_ADMIN"]}>
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    } />
         </Routes>
       </Container>
 

@@ -52,10 +52,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Email already exists");
         }
 
-        Role role = roleRepository.findByName(registrationRequestDto.getRole().getName());
-        if (role == null) {
-            throw new RuntimeException("Role not found");
-        }
+        Role role = roleRepository.findByName(registrationRequestDto.getRole().getName())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
         User user = userMapper.toEntity(registrationRequestDto);
         user.setRoles(Set.of(role));
