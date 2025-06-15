@@ -6,11 +6,13 @@ export default function RegisterForm() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     firstName: '',
     lastName: '',
+    middleName: '',
     role: 'ROLE_PATIENT',
     // Поля пациента
-    middleName: '',
+    // middleName: '',
     birthDate: '',
     gender: '',
     address: '',
@@ -36,15 +38,30 @@ export default function RegisterForm() {
     setLoading(true);
     setError(null);
 
+    if (formData.password !== formData.confirmPassword) {
+      setError('Пароли не совпадают.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Подготавливаем данные для отправки
       const requestData = {
         ...formData,
         birthDate: formData.role === 'ROLE_PATIENT' ? formData.birthDate : null,
         insuranceNumber: formData.role === 'ROLE_PATIENT' ? formData.insuranceNumber : null,
         specialization: formData.role === 'ROLE_DOCTOR' ? formData.specialization : null,
-        // phone: formData.role === 'ROLE_DOCTOR' ? formData.phone : null
+        phone: formData.role === 'ROLE_DOCTOR' ? formData.phone : null
       };
+
+      if (formData.role === 'ROLE_PATIENT') {
+        requestData.middleName = formData.middleName;
+        requestData.birthDate = formData.birthDate;
+        requestData.gender = formData.gender;
+        requestData.address = formData.address;
+        requestData.insuranceNumber = formData.insuranceNumber;
+      } else if (formData.role === 'ROLE_DOCTOR') {
+        requestData.specialization = formData.specialization;
+      }
 
       await register(requestData);
       setSuccess(true);
@@ -95,15 +112,26 @@ export default function RegisterForm() {
         </Col>
       </Row>
 
+      {formData.role === 'ROLE_PATIENT' && (
+        <Form.Group className="mb-3">
+          <Form.Label>Отчество</Form.Label>
+          <Form.Control
+            name="middleName"
+            value={formData.middleName}
+            onChange={handleChange}
+          />
+        </Form.Group>
+      )}
+
       <Form.Group className="mb-3">
-            <Form.Label>Телефон</Form.Label>
-            <Form.Control
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+        <Form.Label>Телефон</Form.Label>
+        <Form.Control
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          required // Телефон, вероятно, обязателен для всех
+        />
       </Form.Group>
 
       <Form.Group className="mb-3">
@@ -130,6 +158,22 @@ export default function RegisterForm() {
       </Form.Group>
 
       <Form.Group className="mb-3">
+        <Form.Label>Повторите пароль</Form.Label>
+        <Form.Control
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+          minLength={6}
+          isInvalid={formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword} // Визуальная индикация несовпадения
+        />
+        <Form.Control.Feedback type="invalid">
+          Пароли не совпадают!
+        </Form.Control.Feedback>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
         <Form.Label>Роль</Form.Label>
         <Form.Select
           name="role"
@@ -145,14 +189,14 @@ export default function RegisterForm() {
       {/* Поля для пациента */}
       {formData.role === 'ROLE_PATIENT' && (
         <>
-          <Form.Group className="mb-3">
+          {/* <Form.Group className="mb-3">
             <Form.Label>Отчество</Form.Label>
             <Form.Control
               name="middleName"
               value={formData.middleName}
               onChange={handleChange}
             />
-          </Form.Group>
+          </Form.Group> */}
 
           <Row>
             <Col md={6}>
@@ -220,11 +264,11 @@ export default function RegisterForm() {
         </>
       )}
 
-      <Button 
-        variant="danger" 
-        type="submit" 
+      <Button
+        variant="danger"
+        type="submit"
         className="w-100 mt-3"
-        disabled={loading}
+        disabled={loading || (formData.password !== formData.confirmPassword)} // Деактивируем кнопку, если пароли не совпадают
       >
         {loading ? 'Регистрация...' : 'Зарегистрироваться'}
       </Button>
