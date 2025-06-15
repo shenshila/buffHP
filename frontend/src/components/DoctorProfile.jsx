@@ -25,6 +25,7 @@ import {
 import { MdEmail, MdPhone, MdLocationOn } from "react-icons/md";
 import { Link } from "react-router-dom";
 import PrescriptionForm from "./PrescriptionForm"; 
+import FeatureUnavailableModal from "./FeatureUnavailableModal";
 import "../css/PatientProfile.css";
 
 const DoctorProfile = ({ profile, refreshProfile }) => {
@@ -32,6 +33,9 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [selectedPatientForPrescription, setSelectedPatientForPrescription] =
     useState(null);
+  const [showFeatureUnavailableModal, setShowFeatureUnavailableModal] = useState(false);
+  const [unavailableFeatureName, setUnavailableFeatureName] = useState('');
+  
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("ru-RU", {
@@ -59,6 +63,16 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
       refreshProfile();
     }
   };
+
+  const handleShowFeatureUnavailable = (featureName) => {
+  setUnavailableFeatureName(featureName);
+  setShowFeatureUnavailableModal(true);
+};
+
+const handleCloseFeatureUnavailable = () => {
+  setShowFeatureUnavailableModal(false);
+  setUnavailableFeatureName('');
+};
 
   const getAppointmentStatusVariant = (status) => {
     switch (status) {
@@ -143,9 +157,16 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
                 <Button variant="outline-primary" className="w-100 mb-2" onClick={() => handleShowPrescriptionModal(null)}>
                   <FaPlus className="me-2" /> Выписать рецепт
                 </Button>
-                <Link to="/doctor/medical-records-management" className="btn btn-outline-secondary w-100">
-                  <FaFileMedicalAlt className="me-2" /> Управление медзаписями
-                </Link>
+                {
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      className="w-100 mb-2"
+                                      onClick={() => handleShowFeatureUnavailable('Детали приема')}
+                                    >
+                                      Управление медзаписями
+                                    </Button>
+                                  }
               </Card.Body>
             </Card>
           </Col>
@@ -160,7 +181,9 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
                       <FaUserMd className="me-2 text-danger" />
                       Личная информация
                     </h5>
-                    <Button variant="outline-danger" size="sm">
+                    <Button variant="outline-danger" size="sm"
+                    onClick={() => handleShowFeatureUnavailable('Редактировать')}
+                    >
                       Редактировать
                     </Button>
                   </Card.Header>
@@ -232,7 +255,10 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
                       Мои приемы
                     </h5>
                     {/* Кнопка для создания нового приема или просмотра расписания */}
-                    <Link to="/doctor/appointments" className="btn btn-danger btn-sm">
+                    <Link to="/doctor/appointments" 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleShowFeatureUnavailable('Детали приема')}
+                    >
                         Расписание
                     </Link>
                   </Card.Header>
@@ -404,6 +430,11 @@ const DoctorProfile = ({ profile, refreshProfile }) => {
           />
         </Modal.Body>
       </Modal>
+      <FeatureUnavailableModal
+          show={showFeatureUnavailableModal}
+          handleClose={handleCloseFeatureUnavailable}
+          featureName={unavailableFeatureName}
+        />
     </motion.div>
   );
 };
