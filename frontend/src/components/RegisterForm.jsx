@@ -1,6 +1,59 @@
 import { useState } from 'react';
 import { Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import { register } from '../api/authApi';
+import "../css/RegisterForm.css";
+
+const DOCTOR_SPECIALIZATIONS = [
+  "Терапевт",
+  "Педиатр",
+  "Кардиолог",
+  "Дерматолог",
+  "Эндокринолог",
+  "Гастроэнтеролог",
+  "Хирург",
+  "Ортопед",
+  "Офтальмолог",
+  "Отоларинголог (ЛОР)",
+  "Невролог",
+  "Психиатр",
+  "Уролог",
+  "Гинеколог",
+  "Стоматолог",
+  "Аллерголог-иммунолог",
+  "Инфекционист",
+  "Онколог",
+  "Пульмонолог",
+  "Ревматолог",
+  "Нефролог",
+  "Физиотерапевт",
+  "Мануальный терапевт",
+  "Остеопат",
+  "Диетолог",
+  "Сексолог",
+  "Флеболог",
+  "Проктолог",
+  "Анестезиолог-реаниматолог",
+  "Венеролог",
+  "Гепатолог",
+  "Гематолог",
+  "Гериатр",
+  "Иглорефлексотерапевт",
+  "Косметолог",
+  "Лаборант",
+  "Нарколог",
+  "Неонатолог",
+  "Патологоанатом",
+  "Радиолог",
+  "Судмедэксперт",
+  "Токсиколог",
+  "Трансфузиолог",
+  "Травматолог",
+  "Трихолог",
+  "Фтизиатр",
+  "Эмбриолог",
+  "Эпидемиолог",
+  "Генетик"
+];
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -25,12 +78,38 @@ export default function RegisterForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    // Логика для специализации
+    if (name === 'specialization' && formData.role === 'ROLE_DOCTOR') {
+      if (value.length > 0) {
+        const filteredSuggestions = DOCTOR_SPECIALIZATIONS.filter(spec =>
+          spec.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(filteredSuggestions);
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setFormData(prev => ({
+      ...prev,
+      specialization: suggestion
+    }));
+    setSuggestions([]); // Очищаем подсказки после выбора
+    setShowSuggestions(false); // Скрываем список
   };
 
   const handleSubmit = async (e) => {
@@ -250,19 +329,34 @@ export default function RegisterForm() {
       )}
 
       {/* Поля для доктора */}
-      {formData.role === 'ROLE_DOCTOR' && (
-        <>
-          <Form.Group className="mb-3">
-            <Form.Label>Специализация</Form.Label>
-            <Form.Control
-              name="specialization"
-              value={formData.specialization}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-        </>
+{formData.role === 'ROLE_DOCTOR' && (
+  <>
+    <Form.Group className="mb-3 position-relative"> {/* Добавляем position-relative для позиционирования подсказок */}
+      <Form.Label>Специализация</Form.Label>
+      <Form.Control
+        name="specialization"
+        value={formData.specialization}
+        onChange={handleChange}
+        required
+        onFocus={() => { // Показываем подсказки при фокусе, если что-то уже введено
+          if (formData.specialization.length > 0) {
+            setShowSuggestions(true);
+          }
+        }}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 100)} // Скрываем подсказки при потере фокуса, с задержкой
+      />
+      {showSuggestions && suggestions.length > 0 && (
+        <ul className="suggestions-list"> {/* Будет стилизован в CSS */}
+          {suggestions.map((s, index) => (
+            <li key={index} onMouseDown={() => handleSelectSuggestion(s)}> {/* Используем onMouseDown, чтобы избежать потери фокуса */}
+              {s}
+            </li>
+          ))}
+        </ul>
       )}
+    </Form.Group>
+  </>
+)}
 
       <Button
         variant="danger"
